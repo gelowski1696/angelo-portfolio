@@ -128,6 +128,31 @@
   transform: rotate(45deg);
 }
 
+.project-art.has-image::before {
+  z-index: 1;
+  background:
+    linear-gradient(to top, rgba(8, 20, 38, 0.78), transparent 42%),
+    linear-gradient(135deg, rgba(8, 20, 38, 0.18), transparent 52%);
+  mask-image: none;
+}
+
+.project-art.has-image::after {
+  display: none;
+}
+
+.project-art-image {
+  object-fit: cover;
+  object-position: left top;
+  filter: saturate(0.82) contrast(1.04);
+  transform: scale(1.012);
+  transition: filter 450ms ease, transform 700ms ease;
+}
+
+.project-showcase:hover .project-art-image {
+  filter: saturate(1) contrast(1.04);
+  transform: scale(1.035);
+}
+
 .project-art-02::after {
   border-radius: 50%;
   transform: none;
@@ -183,6 +208,7 @@
 
 .art-label {
   position: absolute;
+  z-index: 3;
   right: 1rem;
   bottom: 1rem;
   color: var(--project-accent);

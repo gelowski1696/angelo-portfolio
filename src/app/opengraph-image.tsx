@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { portfolio } from "@/data/portfolio";
 
-export const alt = `${portfolio.name} — Software Engineer portfolio`;
+export const alt = `${portfolio.name} — Full-Stack Developer portfolio`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -44,7 +44,7 @@ export default function OpenGraphImage() {
             fontSize: 25,
           }}
         >
-          Software engineering · Product systems · Interface craft
+          Full-stack development · Business systems · Product delivery
         </div>
       </div>
     </div>,

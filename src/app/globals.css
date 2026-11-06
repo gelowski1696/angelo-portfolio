@@ -493,6 +493,53 @@ footer {
   line-height: 1.65;
 }
 
+.timeline {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+  list-style: none;
+}
+
+.timeline li {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.35fr) minmax(0, 1fr);
+  gap: 3rem;
+  padding: 2.25rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.timeline li > span,
+.experience-organization {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.timeline li > span {
+  color: var(--accent);
+}
+
+.experience-organization {
+  margin: 0 0 0.75rem;
+  color: var(--dusk-blue-light);
+}
+
+.timeline h3 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3.2vw, 3.5rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.experience-summary {
+  max-width: 48rem;
+  margin: 1rem 0 0;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
 .contact {
   position: relative;
   overflow: hidden;
@@ -680,6 +727,11 @@ footer > div {
   .experience-empty {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+
+  .timeline li {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .about-copy {

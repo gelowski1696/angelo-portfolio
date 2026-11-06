@@ -11,8 +11,8 @@ export function StackExperience() {
               A connected technical practice.
             </h2>
             <p className="section-intro" data-reveal>
-              Example categories are shown until your real working stack is configured.
-              Remove anything you do not actively use.
+              A practical stack spanning the interface, API, data, and delivery layers
+              needed to ship and support business software.
             </p>
           </div>
         </div>
@@ -45,11 +45,13 @@ export function StackExperience() {
         {portfolio.experience.length ? (
           <ol className="timeline">
             {portfolio.experience.map((item) => (
-              <li key={`${item.period}-${item.role}`}>
+              <li key={`${item.period}-${item.role}`} data-reveal>
                 <span>{item.period}</span>
-                <h3>{item.role}</h3>
-                <p>{item.organization}</p>
-                <p>{item.summary}</p>
+                <div>
+                  <p className="experience-organization">{item.organization}</p>
+                  <h3>{item.role}</h3>
+                  <p className="experience-summary">{item.summary}</p>
+                </div>
               </li>
             ))}
           </ol>

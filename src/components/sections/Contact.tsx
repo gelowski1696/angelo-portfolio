@@ -1,9 +1,9 @@
-import { ArrowUpRight, Mail } from "lucide-react";
+import { ArrowUpRight, FileText, Mail } from "lucide-react";
 import { getConfiguredSocialLinks, portfolio } from "@/data/portfolio";
 
 export function Contact() {
   const socialLinks = getConfiguredSocialLinks(portfolio.social);
-  const hasContact = Boolean(portfolio.email || socialLinks.length);
+  const hasContact = Boolean(portfolio.email || portfolio.resumeUrl || socialLinks.length);
 
   return (
     <section className="contact" id="contact" aria-labelledby="contact-title">
@@ -13,8 +13,8 @@ export function Contact() {
         Let’s build something remarkable.
       </h2>
       <p className="contact-copy" data-reveal>
-        Have a difficult product problem, a system that needs clarity, or a digital
-        experience worth refining? Bring the context. I’ll bring the engineering lens.
+        Building an operational platform, modernizing an internal workflow, or looking
+        for a full-stack developer? Send the context and let’s talk.
       </p>
       {hasContact ? (
         <div className="contact-actions" data-reveal>
@@ -28,6 +28,11 @@ export function Contact() {
               {social.label} <ArrowUpRight aria-hidden="true" size={16} />
             </a>
           ))}
+          {portfolio.resumeUrl ? (
+            <a href={portfolio.resumeUrl} target="_blank" rel="noreferrer">
+              <FileText aria-hidden="true" size={16} /> Resume
+            </a>
+          ) : null}
         </div>
       ) : (
         <p className="contact-setup" data-reveal>

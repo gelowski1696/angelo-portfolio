@@ -54,8 +54,13 @@ export function MotionOrchestrator() {
         });
 
         gsap.utils.toArray<HTMLElement>(".project-art").forEach((element) => {
+          const motionTarget = element.querySelector(
+            ".art-window, .project-art-image",
+          );
+          if (!motionTarget) return;
+
           gsap.fromTo(
-            element.querySelector(".art-window"),
+            motionTarget,
             { yPercent: 8 },
             {
               yPercent: -8,

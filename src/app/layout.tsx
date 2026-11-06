@@ -21,22 +21,20 @@ const siteUrl = portfolio.siteUrl || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${portfolio.name} — Software Engineer`,
+    default: `${portfolio.name} — Full-Stack Developer`,
     template: `%s — ${portfolio.name}`,
   },
-  description:
-    "A software engineer portfolio focused on thoughtful systems, strong interfaces, and measurable performance.",
+  description: portfolio.introduction,
   openGraph: {
-    title: `${portfolio.name} — Software Engineer`,
-    description:
-      "Thoughtful systems, strong interfaces, and measurable performance.",
+    title: `${portfolio.name} — Full-Stack Developer`,
+    description: portfolio.introduction,
     type: "website",
     url: siteUrl,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${portfolio.name} — Software Engineer`,
-    description: "Thoughtful systems, strong interfaces, and measurable performance.",
+    title: `${portfolio.name} — Full-Stack Developer`,
+    description: portfolio.introduction,
   },
   robots: {
     index: Boolean(portfolio.siteUrl),

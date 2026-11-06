@@ -1,12 +1,7 @@
 import type { CSSProperties } from "react";
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { getPublishedProjects, portfolio } from "@/data/portfolio";
-
-const themeProjectAccents = [
-  "var(--accent)",
-  "var(--dusk-blue-light)",
-  "var(--accent-soft)",
-];
 
 export function Projects() {
   const projects = getPublishedProjects(portfolio.projects);
@@ -20,19 +15,19 @@ export function Projects() {
             Systems worth opening up.
           </h2>
           <p className="section-intro" data-reveal>
-            Replace these marked samples with real work. Each case should show the problem,
-            the engineering decision, and the outcome—not just the interface.
+            Production platforms and focused tools shaped around real operational
+            constraints—from offline cashier flows to AI-assisted document work.
           </p>
         </div>
       </div>
 
       <div className="project-list">
-        {projects.map((project, index) => (
+        {projects.map((project) => (
           <article
             className="project-showcase"
             key={project.slug}
             style={{
-              "--project-accent": themeProjectAccents[index % themeProjectAccents.length],
+              "--project-accent": project.accent,
             } as CSSProperties}
             data-reveal
           >
@@ -57,7 +52,7 @@ export function Projects() {
                 <div className="project-actions">
                   {project.demoUrl ? (
                     <a href={project.demoUrl} target="_blank" rel="noreferrer">
-                      Live demo <ArrowUpRight aria-hidden="true" size={16} />
+                      Visit platform <ArrowUpRight aria-hidden="true" size={16} />
                     </a>
                   ) : null}
                   {project.repoUrl ? (
@@ -67,24 +62,39 @@ export function Projects() {
                   ) : null}
                 </div>
               ) : (
-                <p className="project-unconfigured">Links appear when configured</p>
+                <p className="project-unconfigured">
+                  {project.linkNote ?? "Public links are not available"}
+                </p>
               )}
             </div>
 
-            <div className={`project-art project-art-${project.index}`} aria-hidden="true">
-              <div className="art-window">
-                <span />
-                <span />
-                <span />
-                <div className="art-grid">
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                  <i />
+            <div
+              className={`project-art project-art-${project.index}${project.image ? " has-image" : ""}`}
+              aria-hidden="true"
+            >
+              {project.image ? (
+                <Image
+                  className="project-art-image"
+                  src={project.image}
+                  alt=""
+                  fill
+                  sizes="(max-width: 900px) 100vw, 58vw"
+                />
+              ) : (
+                <div className="art-window">
+                  <span />
+                  <span />
+                  <span />
+                  <div className="art-grid">
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="art-label">CASE_{project.index}</div>
             </div>
           </article>

@@ -9,7 +9,7 @@ export function Hero() {
       <figure className="hero-portrait" data-hero-visual>
         <Image
           src={profileImage}
-          alt="Portrait of the portfolio owner"
+          alt={`Portrait of ${portfolio.name}`}
           fill
           sizes="(max-width: 760px) 100vw, 56vw"
           placeholder="blur"

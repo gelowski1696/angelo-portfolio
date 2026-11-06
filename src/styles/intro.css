@@ -197,11 +197,3 @@ html[data-intro="active"] {
     font-size: clamp(3.6rem, 19vw, 6rem);
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .intro-boot span,
-  .intro-experience.is-exiting {
-    animation: none;
-    opacity: 1;
-  }
-}

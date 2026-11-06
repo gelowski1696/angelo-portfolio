@@ -40,17 +40,15 @@ describe("IntroExperience", () => {
     expect(sessionStorage.getItem(INTRO_SESSION_KEY)).toBe("1");
   });
 
-  it("does not show when reduced motion is requested", async () => {
+  it("still shows when reduced motion is requested", async () => {
     setReducedMotion(true);
     render(<IntroExperience />);
 
-    await waitFor(() => {
-      expect(
-        screen.queryByRole("dialog", {
-          name: /portfolio system introduction/i,
-        }),
-      ).not.toBeInTheDocument();
-    });
+    expect(
+      await screen.findByRole("dialog", {
+        name: /portfolio system introduction/i,
+      }),
+    ).toBeInTheDocument();
   });
 
   it("does not show again in the same session", async () => {

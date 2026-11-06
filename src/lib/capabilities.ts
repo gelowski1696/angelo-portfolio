@@ -1,15 +1,13 @@
 export type ClientCapabilities = {
   webglAvailable: boolean;
-  reducedMotion: boolean;
   saveData: boolean;
 };
 
 export function shouldRenderWebGL({
   webglAvailable,
-  reducedMotion,
   saveData,
 }: ClientCapabilities): boolean {
-  return webglAvailable && !reducedMotion && !saveData;
+  return webglAvailable && !saveData;
 }
 
 function detectWebGL(): boolean {
@@ -31,7 +29,6 @@ export function readClientCapabilities(): ClientCapabilities {
 
   return {
     webglAvailable: detectWebGL(),
-    reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     saveData: Boolean(connection?.saveData),
   };
 }

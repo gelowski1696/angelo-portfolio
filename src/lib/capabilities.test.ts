@@ -6,16 +6,14 @@ describe("shouldRenderWebGL", () => {
     expect(
       shouldRenderWebGL({
         webglAvailable: true,
-        reducedMotion: false,
         saveData: false,
       }),
     ).toBe(true);
   });
 
   it.each([
-    { webglAvailable: false, reducedMotion: false, saveData: false },
-    { webglAvailable: true, reducedMotion: true, saveData: false },
-    { webglAvailable: true, reducedMotion: false, saveData: true },
+    { webglAvailable: false, saveData: false },
+    { webglAvailable: true, saveData: true },
   ])("uses the static fallback for constrained browsers", (capabilities) => {
     expect(shouldRenderWebGL(capabilities)).toBe(false);
   });

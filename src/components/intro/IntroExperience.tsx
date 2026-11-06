@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowDownRight } from "lucide-react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { INTRO_REPLAY_EVENT } from "./intro-events";
 import { IntroVisual } from "./IntroVisual";
@@ -32,13 +32,7 @@ function rememberIntro() {
 }
 
 export function IntroExperience() {
-  const reduceMotion = useReducedMotion();
-  const [visible, setVisible] = useState(() => {
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    return !reducedMotion && !hasSeenIntro();
-  });
+  const [visible, setVisible] = useState(() => !hasSeenIntro());
   const [phase, setPhase] = useState<"booting" | "ready" | "exiting">(
     "booting",
   );
@@ -119,7 +113,7 @@ export function IntroExperience() {
       role="dialog"
       aria-modal="true"
       aria-label="Portfolio system introduction"
-      initial={reduceMotion ? false : { opacity: 0, scale: 1.015 }}
+      initial={{ opacity: 0, scale: 1.015 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
@@ -128,7 +122,7 @@ export function IntroExperience() {
 
       <motion.div
         className="intro-copy"
-        initial={reduceMotion ? false : { opacity: 0, y: 32 }}
+        initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
       >

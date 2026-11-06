@@ -17,6 +17,8 @@ export type Project = {
   architecture: string;
   stack: string[];
   accent: string;
+  image?: string;
+  linkNote?: string;
   demoUrl: string;
   repoUrl: string;
   published?: boolean;

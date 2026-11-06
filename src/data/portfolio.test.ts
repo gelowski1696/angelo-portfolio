@@ -6,26 +6,45 @@ import {
 } from "./portfolio";
 
 describe("portfolio configuration", () => {
-  it("omits social links that have not been configured", () => {
-    expect(getConfiguredSocialLinks(portfolio.social)).toEqual([]);
+  it("publishes the configured professional links", () => {
+    expect(getConfiguredSocialLinks(portfolio.social)).toEqual([
+      {
+        key: "github",
+        label: "GitHub",
+        url: "https://github.com/gelowski1696",
+      },
+      {
+        key: "linkedin",
+        label: "LinkedIn",
+        url: "https://www.linkedin.com/in/angelo-luzong-9b1125274/",
+      },
+    ]);
   });
 
-  it("keeps sample projects visibly identified as placeholders", () => {
+  it("publishes three real projects without placeholder labels", () => {
     const projects = getPublishedProjects(portfolio.projects);
 
     expect(projects).toHaveLength(3);
-    expect(projects.every((project) => project.isPlaceholder)).toBe(true);
-    expect(projects.every((project) => project.label === "Sample / Replace me")).toBe(
-      true,
-    );
+    expect(projects.every((project) => !project.isPlaceholder)).toBe(true);
+    expect(projects.map((project) => project.slug)).toEqual([
+      "vmjamtech-vpos",
+      "docuai",
+      "vmjam-sales",
+    ]);
   });
 
-  it("does not expose empty demo or source links", () => {
+  it("exposes only verified public project destinations", () => {
     const projects = getPublishedProjects(portfolio.projects);
 
-    expect(
-      projects.every((project) => !project.demoUrl && !project.repoUrl),
-    ).toBe(true);
+    expect(projects[0].demoUrl).toBe("https://vmjamtech.com/");
+    expect(projects[1].demoUrl).toBe("");
+    expect(projects[2].linkNote).toContain("Private deployment");
+  });
+
+  it("includes configured contact and work history", () => {
+    expect(portfolio.email).toBe("luzongangelo1996@gmail.com");
+    expect(portfolio.resumeUrl).toMatch(/^https:\/\/docs\.google\.com\//);
+    expect(portfolio.experience).toHaveLength(3);
+    expect(portfolio.experience.every((item) => !item.isPlaceholder)).toBe(true);
   });
 });
-

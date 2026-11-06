@@ -97,7 +97,7 @@
   border: 1px solid color-mix(in srgb, var(--project-accent) 35%, transparent);
   background:
     radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--project-accent) 22%, transparent), transparent 36%),
-    linear-gradient(145deg, rgba(17, 27, 44, 0.9), rgba(5, 8, 14, 0.98));
+    linear-gradient(145deg, rgba(23, 43, 71, 0.92), rgba(8, 20, 38, 0.99));
   isolation: isolate;
 }
 
@@ -110,8 +110,8 @@
 .project-art::before {
   inset: 0;
   background-image:
-    linear-gradient(rgba(155, 189, 237, 0.11) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(155, 189, 237, 0.11) 1px, transparent 1px);
+    linear-gradient(rgba(143, 167, 199, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(143, 167, 199, 0.12) 1px, transparent 1px);
   background-size: 3rem 3rem;
   mask-image: radial-gradient(circle, black 15%, transparent 72%);
 }
@@ -147,8 +147,8 @@
   width: 70%;
   height: 56%;
   padding: 1rem;
-  border: 1px solid rgba(238, 244, 255, 0.25);
-  background: rgba(5, 10, 17, 0.72);
+  border: 1px solid rgba(244, 241, 235, 0.25);
+  background: rgba(8, 20, 38, 0.76);
   box-shadow: 0 2rem 4rem rgba(0, 0, 0, 0.32);
   transform: perspective(55rem) rotateX(6deg) rotateY(-9deg) rotateZ(2deg);
   backdrop-filter: blur(0.75rem);

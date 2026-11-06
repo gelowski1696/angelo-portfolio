@@ -2,6 +2,12 @@ import type { CSSProperties } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { getPublishedProjects, portfolio } from "@/data/portfolio";
 
+const themeProjectAccents = [
+  "var(--accent)",
+  "var(--dusk-blue-light)",
+  "var(--accent-soft)",
+];
+
 export function Projects() {
   const projects = getPublishedProjects(portfolio.projects);
 
@@ -21,11 +27,13 @@ export function Projects() {
       </div>
 
       <div className="project-list">
-        {projects.map((project) => (
+        {projects.map((project, index) => (
           <article
             className="project-showcase"
             key={project.slug}
-            style={{ "--project-accent": project.accent } as CSSProperties}
+            style={{
+              "--project-accent": themeProjectAccents[index % themeProjectAccents.length],
+            } as CSSProperties}
             data-reveal
           >
             <div className="project-copy">

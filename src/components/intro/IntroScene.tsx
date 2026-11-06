@@ -69,20 +69,20 @@ function Workstation({ exiting }: { exiting: boolean }) {
     <group ref={scene} rotation={[0, -0.18, 0]} position={[0, -0.8, 0]}>
       <mesh position={[0, -0.38, 0]} receiveShadow>
         <boxGeometry args={[5.6, 0.18, 3.2]} />
-        <meshStandardMaterial color="#111820" metalness={0.7} roughness={0.3} />
+        <meshStandardMaterial color="#10213a" metalness={0.7} roughness={0.3} />
       </mesh>
 
       <group position={[0, 0.65, -0.25]}>
         <mesh castShadow>
           <boxGeometry args={[3.05, 2.35, 0.42]} />
-          <meshStandardMaterial color="#111a21" metalness={0.78} roughness={0.22} />
+          <meshStandardMaterial color="#172b47" metalness={0.78} roughness={0.22} />
         </mesh>
         <mesh position={[0, 0.08, 0.225]}>
           <boxGeometry args={[2.55, 1.78, 0.025]} />
           <meshStandardMaterial
             ref={screen}
-            color="#07151a"
-            emissive="#42c6e8"
+            color="#0a1a30"
+            emissive="#f28c5a"
             emissiveIntensity={1.2}
             roughness={0.16}
           />
@@ -90,31 +90,31 @@ function Workstation({ exiting }: { exiting: boolean }) {
         {[0.62, 0.18, -0.28, -0.62].map((y, index) => (
           <mesh key={y} position={[-0.62 + index * 0.38, y, 0.25]}>
             <boxGeometry args={[0.12, 0.48 + index * 0.13, 0.015]} />
-            <meshBasicMaterial color="#a0efff" transparent opacity={0.72} />
+            <meshBasicMaterial color="#ffb18a" transparent opacity={0.72} />
           </mesh>
         ))}
         <mesh position={[0, -1.4, 0]}>
           <boxGeometry args={[0.32, 0.72, 0.28]} />
-          <meshStandardMaterial color="#10171d" metalness={0.8} roughness={0.25} />
+          <meshStandardMaterial color="#10213a" metalness={0.8} roughness={0.25} />
         </mesh>
         <mesh position={[0, -1.78, 0.14]}>
           <boxGeometry args={[1.5, 0.1, 0.72]} />
-          <meshStandardMaterial color="#111920" metalness={0.75} roughness={0.25} />
+          <meshStandardMaterial color="#172b47" metalness={0.75} roughness={0.25} />
         </mesh>
       </group>
 
       <mesh position={[0, -0.12, 1.05]} rotation={[-0.2, 0, 0]} castShadow>
         <boxGeometry args={[2.5, 0.12, 0.86]} />
-        <meshStandardMaterial color="#10171d" metalness={0.65} roughness={0.3} />
+        <meshStandardMaterial color="#10213a" metalness={0.65} roughness={0.3} />
       </mesh>
 
       <mesh position={[-2.05, 0.15, 0.25]} castShadow>
         <cylinderGeometry args={[0.38, 0.45, 1.05, 20]} />
-        <meshStandardMaterial color="#121b22" metalness={0.72} roughness={0.24} />
+        <meshStandardMaterial color="#172b47" metalness={0.72} roughness={0.24} />
       </mesh>
       <mesh position={[-2.05, 0.18, 0.25]}>
         <torusGeometry args={[0.25, 0.025, 8, 40]} />
-        <meshBasicMaterial color="#78dcf5" />
+        <meshBasicMaterial color="#f28c5a" />
       </mesh>
     </group>
   );
@@ -136,15 +136,15 @@ export function IntroScene({
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         shadows
       >
-        <ambientLight intensity={0.42} color="#9ec7d1" />
+        <ambientLight intensity={0.42} color="#8fa7c7" />
         <directionalLight
           castShadow
-          color="#d8f7ff"
+          color="#e5ecf5"
           intensity={2.8}
           position={[3, 5, 4]}
         />
-        <pointLight color="#42c6e8" intensity={12} distance={8} position={[0, 1, 2]} />
-        <pointLight color="#4257e8" intensity={6} distance={7} position={[-3, 0, 1]} />
+        <pointLight color="#f28c5a" intensity={12} distance={8} position={[0, 1, 2]} />
+        <pointLight color="#5f7698" intensity={7} distance={7} position={[-3, 0, 1]} />
         <Workstation exiting={exiting} />
       </Canvas>
     </IntroSceneBoundary>

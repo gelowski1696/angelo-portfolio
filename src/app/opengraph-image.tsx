@@ -15,12 +15,12 @@ export default function OpenGraphImage() {
         width: "100%",
         height: "100%",
         padding: "64px",
-        background: "#070a12",
-        color: "#eef4ff",
+        background: "#081426",
+        color: "#f4f1eb",
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ display: "flex", color: "#59d8ff", fontSize: 24 }}>
+      <div style={{ display: "flex", color: "#f28c5a", fontSize: 24 }}>
         &lt;{portfolio.name} /&gt;
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -40,7 +40,7 @@ export default function OpenGraphImage() {
           style={{
             display: "flex",
             marginTop: 32,
-            color: "#9baac1",
+            color: "#aab6c8",
             fontSize: 25,
           }}
         >

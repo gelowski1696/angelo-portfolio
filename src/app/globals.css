@@ -3,15 +3,18 @@
 @import "../styles/intro.css";
 
 :root {
-  --bg: #070a12;
-  --bg-elevated: #0e1524;
-  --surface: #111b2c;
-  --text: #eef4ff;
-  --text-muted: #9baac1;
-  --accent: #59d8ff;
-  --accent-secondary: #718cff;
-  --border: rgba(155, 189, 237, 0.17);
-  --focus: #94ebff;
+  --bg: #081426;
+  --bg-elevated: #10213a;
+  --surface: #172b47;
+  --text: #f4f1eb;
+  --text-muted: #aab6c8;
+  --dusk-blue: #5f7698;
+  --dusk-blue-light: #8fa7c7;
+  --accent: #f28c5a;
+  --accent-secondary: #6e85a8;
+  --accent-soft: #c66d45;
+  --border: rgba(143, 167, 199, 0.2);
+  --focus: #ffb18a;
   --page-gutter: clamp(1.25rem, 4vw, 4.5rem);
   --content-width: 100rem;
 }
@@ -29,7 +32,7 @@ body {
   margin: 0;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 78% 18%, rgba(89, 216, 255, 0.08), transparent 26rem),
+    radial-gradient(circle at 78% 18%, rgba(95, 118, 152, 0.14), transparent 28rem),
     var(--bg);
   color: var(--text);
   font-family: var(--font-display), sans-serif;
@@ -108,7 +111,7 @@ button:focus-visible {
   min-height: 100svh;
   overflow: hidden;
   padding: 8rem var(--page-gutter) 9rem;
-  background: #080b0e;
+  background: #09172a;
 }
 
 .hero::before {
@@ -162,7 +165,7 @@ h1 {
 h1 span {
   display: block;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(238, 244, 255, 0.58);
+  -webkit-text-stroke: 1px rgba(244, 241, 235, 0.58);
 }
 
 .status-dot {
@@ -212,7 +215,7 @@ h1 span {
 
 .button-primary {
   background: var(--accent);
-  color: #041017;
+  color: #081426;
 }
 
 .button-quiet:hover {
@@ -233,8 +236,8 @@ h1 span {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to top, #080b0e 0, transparent 35%),
-    linear-gradient(to left, transparent 55%, #080b0e 100%);
+    linear-gradient(to top, #09172a 0, transparent 35%),
+    linear-gradient(to left, transparent 55%, #09172a 100%);
   content: "";
 }
 
@@ -248,7 +251,7 @@ h1 span {
 .hero-location {
   position: absolute;
   z-index: 3;
-  color: rgba(238, 244, 255, 0.66);
+  color: rgba(244, 241, 235, 0.66);
   font-family: var(--font-mono), monospace;
   font-size: 0.65rem;
   letter-spacing: 0.1em;
@@ -266,7 +269,7 @@ h1 span {
   bottom: -0.05em;
   z-index: 4;
   margin: 0;
-  color: rgba(238, 244, 255, 0.9);
+  color: rgba(244, 241, 235, 0.9);
   font-size: clamp(4.5rem, 12.2vw, 13.5rem);
   font-weight: 500;
   letter-spacing: -0.085em;
@@ -503,11 +506,11 @@ footer {
   top: 14%;
   width: 33rem;
   aspect-ratio: 1;
-  border: 1px solid rgba(89, 216, 255, 0.18);
+  border: 1px solid rgba(95, 118, 152, 0.32);
   border-radius: 50%;
   box-shadow:
-    0 0 0 5rem rgba(89, 216, 255, 0.025),
-    0 0 0 10rem rgba(113, 140, 255, 0.018);
+    0 0 0 5rem rgba(242, 140, 90, 0.035),
+    0 0 0 10rem rgba(95, 118, 152, 0.025);
 }
 
 .contact h2 {
@@ -526,7 +529,7 @@ footer {
   margin-top: 2.5rem;
   padding: 1rem 1.25rem;
   border-left: 2px solid var(--accent);
-  background: rgba(89, 216, 255, 0.04);
+  background: rgba(242, 140, 90, 0.05);
   font-family: var(--font-mono), monospace;
   font-size: 0.76rem;
 }
@@ -601,7 +604,7 @@ footer > div {
     width: 2.75rem;
     height: 2.75rem;
     border: 1px solid var(--border);
-    background: rgba(7, 10, 18, 0.9);
+    background: rgba(8, 20, 38, 0.92);
     color: var(--text);
   }
 
@@ -615,7 +618,7 @@ footer > div {
     flex-direction: column;
     gap: 0;
     padding: 7rem var(--page-gutter) 3rem;
-    background: rgba(7, 10, 18, 0.98);
+    background: rgba(8, 20, 38, 0.98);
   }
 
   .mobile-nav a {
@@ -654,7 +657,7 @@ footer > div {
   }
 
   .hero-portrait::after {
-    background: linear-gradient(to top, #080b0e 8%, transparent 72%);
+    background: linear-gradient(to top, #09172a 8%, transparent 72%);
   }
 
   .hero-portrait figcaption,

@@ -50,28 +50,6 @@ export function MotionOrchestrator() {
           },
         );
       });
-
-      gsap.utils.toArray<HTMLElement>(".project-art").forEach((element) => {
-        const motionTarget = element.querySelector(
-          ".art-window, .project-art-image",
-        );
-        if (!motionTarget) return;
-
-        gsap.fromTo(
-          motionTarget,
-          { yPercent: 3 },
-          {
-            yPercent: -3,
-            ease: "none",
-            scrollTrigger: {
-              trigger: element,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 1,
-            },
-          },
-        );
-      });
     });
 
     return () => {

@@ -758,18 +758,6 @@ footer > div {
     grid-template-columns: 1fr;
   }
 
-  .project-showcase {
-    grid-template-columns: 1fr;
-  }
-
-  .project-showcase:nth-child(even) .project-copy {
-    order: initial;
-  }
-
-  .project-art {
-    min-height: 30rem;
-  }
-
   .project-row {
     grid-template-columns: 3rem 1fr;
   }
@@ -826,15 +814,6 @@ footer > div {
 
   .strength-list article:nth-child(even) {
     padding-left: 0;
-  }
-
-  .project-art {
-    min-height: 22rem;
-  }
-
-  .project-copy dl div {
-    grid-template-columns: 1fr;
-    gap: 0.25rem;
   }
 
   .contact-actions {

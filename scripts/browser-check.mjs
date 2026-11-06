@@ -6,7 +6,7 @@ const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const port = 9333;
 const outputDirectory = path.resolve(".browser-check");
 const profileDirectory = path.join(outputDirectory, "profile");
-const siteUrl = "http://localhost:3000";
+const siteUrl = process.env.BROWSER_CHECK_URL ?? "http://localhost:3000";
 
 await rm(outputDirectory, { recursive: true, force: true });
 await mkdir(outputDirectory, { recursive: true });
@@ -117,6 +117,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       const bounds = button?.getBoundingClientRect();
       return {
         visible: Boolean(dialog),
+        hasCanvas: Boolean(dialog?.querySelector('canvas')),
         button: bounds ? { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 } : null
       };
     })())`,
@@ -154,11 +155,17 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       title: document.title,
       h1: document.querySelector('h1')?.innerText,
       sectionCount: document.querySelectorAll('main section').length,
-      projectCount: document.querySelectorAll('.project-showcase').length,
+      projectCount: document.querySelectorAll('.project-slide').length,
       navigationCount: document.querySelectorAll('nav').length,
       canvasCount: document.querySelectorAll('canvas').length,
       scrollWidth: document.documentElement.scrollWidth,
       clientWidth: document.documentElement.clientWidth,
+      carouselScrollWidth: document.querySelector('.project-carousel-track')?.scrollWidth ?? 0,
+      carouselClientWidth: document.querySelector('.project-carousel-track')?.clientWidth ?? 0,
+      projectImageCount: document.querySelectorAll('.project-art-image').length,
+      containedProjectImages: [...document.querySelectorAll('.project-art-image')]
+        .every((image) => getComputedStyle(image).objectFit === 'contain'),
+      projectCounter: document.querySelector('.project-carousel-counter')?.textContent?.trim(),
       contactSetupVisible: Boolean(document.querySelector('.contact-setup')),
       introVisible: Boolean(document.querySelector('.intro-experience'))
     })`,
@@ -181,27 +188,81 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
     Buffer.from(screenshot.data, "base64"),
   );
 
+  if (name === "mobile") {
+    await cdp.send("Runtime.evaluate", {
+      expression: "document.querySelector('#projects')?.scrollIntoView({ block: 'start' })",
+    });
+    await delay(1000);
+    const mobileCarouselScreenshot = await cdp.send("Page.captureScreenshot", {
+      format: "png",
+      captureBeyondViewport: false,
+    });
+    await writeFile(
+      path.join(outputDirectory, "mobile-carousel.png"),
+      Buffer.from(mobileCarouselScreenshot.data, "base64"),
+    );
+  }
+
   if (name === "desktop") {
-    for (let index = 0; index < 14; index += 1) {
+    await cdp.send("Runtime.evaluate", {
+      expression: "document.querySelector('#projects')?.scrollIntoView({ block: 'start' })",
+    });
+    await delay(1200);
+    const projectsScreenshot = await cdp.send("Page.captureScreenshot", {
+      format: "png",
+      captureBeyondViewport: false,
+    });
+    await writeFile(
+      path.join(outputDirectory, "desktop-carousel.png"),
+      Buffer.from(projectsScreenshot.data, "base64"),
+    );
+
+    const nextButtonState = await cdp.send("Runtime.evaluate", {
+      expression: `JSON.stringify((() => {
+        const button = document.querySelector('[aria-label="Next project"]');
+        const bounds = button?.getBoundingClientRect();
+        return bounds ? { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 } : null;
+      })())`,
+      returnByValue: true,
+    });
+    const nextButton = JSON.parse(nextButtonState.result.value);
+    if (nextButton) {
       await cdp.send("Input.dispatchMouseEvent", {
-        type: "mouseWheel",
-        x: width / 2,
-        y: height / 2,
-        deltaX: 0,
-        deltaY: 900,
+        type: "mousePressed",
+        button: "left",
+        clickCount: 1,
+        ...nextButton,
       });
-      await delay(180);
-      if (index === 8) {
-        const projectsEndScreenshot = await cdp.send("Page.captureScreenshot", {
-          format: "png",
-          captureBeyondViewport: false,
-        });
-        await writeFile(
-          path.join(outputDirectory, "desktop-projects-end.png"),
-          Buffer.from(projectsEndScreenshot.data, "base64"),
-        );
-      }
+      await cdp.send("Input.dispatchMouseEvent", {
+        type: "mouseReleased",
+        button: "left",
+        clickCount: 1,
+        ...nextButton,
+      });
+      await delay(1200);
     }
+
+    const carouselState = await cdp.send("Runtime.evaluate", {
+      expression: `JSON.stringify({
+        counter: document.querySelector('.project-carousel-counter')?.textContent?.trim(),
+        scrollLeft: document.querySelector('.project-carousel-track')?.scrollLeft ?? 0
+      })`,
+      returnByValue: true,
+    });
+    page.carouselAfterNext = JSON.parse(carouselState.result.value);
+    const projectsNextScreenshot = await cdp.send("Page.captureScreenshot", {
+      format: "png",
+      captureBeyondViewport: false,
+    });
+    await writeFile(
+      path.join(outputDirectory, "desktop-carousel-next.png"),
+      Buffer.from(projectsNextScreenshot.data, "base64"),
+    );
+
+    await cdp.send("Runtime.evaluate", {
+      expression: "window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' })",
+    });
+    await delay(600);
     const endScreenshot = await cdp.send("Page.captureScreenshot", {
       format: "png",
       captureBeyondViewport: false,
@@ -233,6 +294,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
     viewport: `${width}x${height}`,
     reducedMotion,
     introWasVisible: intro.visible,
+    introHasCanvas: intro.hasCanvas,
     ...page,
     unnamedInteractiveElements: interactiveWithoutName.length,
   };
@@ -290,24 +352,33 @@ try {
     if (result.projectCount !== 8) {
       failures.push(`${result.name}: expected 8 projects, found ${result.projectCount}`);
     }
+    if (result.carouselScrollWidth <= result.carouselClientWidth) {
+      failures.push(`${result.name}: project carousel is not horizontally scrollable`);
+    }
+    if (result.projectImageCount !== result.projectCount) {
+      failures.push(`${result.name}: expected an image for every project`);
+    }
+    if (!result.containedProjectImages) {
+      failures.push(`${result.name}: project images are not using uncropped contain sizing`);
+    }
     if (result.scrollWidth > result.clientWidth) {
       failures.push(`${result.name}: horizontal overflow`);
     }
     if (result.unnamedInteractiveElements) {
       failures.push(`${result.name}: unnamed interactive elements`);
     }
-    if (result.reducedMotion && result.introWasVisible) {
-      failures.push(`${result.name}: intro should be bypassed for reduced motion`);
-    }
-    if (!result.reducedMotion && !result.introWasVisible) {
+    if (!result.introWasVisible) {
       failures.push(`${result.name}: intro was not shown on a first visit`);
     }
     if (result.introVisible) {
       failures.push(`${result.name}: intro did not dismiss after Enter`);
     }
   }
-  if (results[2].canvasCount !== 0) {
-    failures.push("reduced-motion: WebGL canvas should be disabled");
+  if (!results[0].carouselAfterNext?.scrollLeft || results[0].carouselAfterNext.counter !== "02 / 08") {
+    failures.push("desktop: next control did not advance the horizontal carousel");
+  }
+  if (results[2].introWasVisible && results[0].introHasCanvas !== results[2].introHasCanvas) {
+    failures.push("reduced-motion: intro effects did not match the normal motion mode");
   }
   failures.push(...consoleProblems);
 

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { INTRO_SESSION_KEY, IntroExperience } from "./IntroExperience";
@@ -21,6 +21,7 @@ describe("IntroExperience", () => {
   });
 
   afterEach(() => {
+    cleanup();
     vi.restoreAllMocks();
   });
 
@@ -63,6 +64,19 @@ describe("IntroExperience", () => {
         }),
       ).not.toBeInTheDocument();
     });
+  });
+
+  it("can be replayed after it has been dismissed in the same session", async () => {
+    sessionStorage.setItem(INTRO_SESSION_KEY, "1");
+    render(<IntroExperience />);
+
+    window.dispatchEvent(new Event("portfolio:replay-intro"));
+
+    expect(
+      await screen.findByRole("dialog", {
+        name: /portfolio system introduction/i,
+      }),
+    ).toBeInTheDocument();
   });
 
   it("remains usable when session storage is unavailable", async () => {

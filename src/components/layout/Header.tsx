@@ -2,6 +2,7 @@
 
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { INTRO_REPLAY_EVENT } from "@/components/intro/intro-events";
 
 const navigation = [
   { href: "#about", label: "About" },
@@ -17,6 +18,11 @@ type HeaderProps = {
 
 export function Header({ name }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const replayIntro = () => {
+    setMenuOpen(false);
+    window.dispatchEvent(new Event(INTRO_REPLAY_EVENT));
+  };
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -41,6 +47,9 @@ export function Header({ name }: HeaderProps) {
             {item.label}
           </a>
         ))}
+        <button type="button" onClick={replayIntro}>
+          Replay intro
+        </button>
       </nav>
 
       <button
@@ -70,6 +79,10 @@ export function Header({ name }: HeaderProps) {
               {item.label}
             </a>
           ))}
+          <button type="button" onClick={replayIntro}>
+            <span>06</span>
+            Replay intro
+          </button>
         </nav>
       ) : null}
     </header>

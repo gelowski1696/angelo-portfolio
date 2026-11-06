@@ -1,9 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { Header } from "./Header";
 
 describe("Header", () => {
+  afterEach(() => cleanup());
+
   it("opens and closes the mobile menu with accessible controls", async () => {
     const user = userEvent.setup();
     render(<Header name="YOUR NAME" />);
@@ -18,6 +20,17 @@ describe("Header", () => {
     await user.keyboard("{Escape}");
     expect(toggle).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByRole("navigation", { name: "Mobile navigation" })).toBeNull();
+  });
+
+  it("offers a control for replaying the portfolio intro", async () => {
+    const user = userEvent.setup();
+    const onReplay = vi.fn();
+    window.addEventListener("portfolio:replay-intro", onReplay, { once: true });
+    render(<Header name="YOUR NAME" />);
+
+    await user.click(screen.getByRole("button", { name: /replay intro/i }));
+
+    expect(onReplay).toHaveBeenCalledOnce();
   });
 });
 

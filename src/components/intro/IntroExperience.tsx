@@ -2,6 +2,7 @@
 
 import { ArrowDownRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { INTRO_REPLAY_EVENT } from "./intro-events";
 import { IntroVisual } from "./IntroVisual";
 
 export const INTRO_SESSION_KEY = "portfolio-intro-seen";
@@ -48,6 +49,20 @@ export function IntroExperience() {
     },
     [],
   );
+
+  useEffect(() => {
+    const replayIntro = () => {
+      if (exitTimer.current !== null) {
+        window.clearTimeout(exitTimer.current);
+        exitTimer.current = null;
+      }
+      setPhase("booting");
+      setVisible(true);
+    };
+
+    window.addEventListener(INTRO_REPLAY_EVENT, replayIntro);
+    return () => window.removeEventListener(INTRO_REPLAY_EVENT, replayIntro);
+  }, []);
 
   useEffect(() => {
     if (!visible) return;

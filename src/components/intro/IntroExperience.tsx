@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowDownRight } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { INTRO_REPLAY_EVENT } from "./intro-events";
 import { IntroVisual } from "./IntroVisual";
@@ -31,6 +32,7 @@ function rememberIntro() {
 }
 
 export function IntroExperience() {
+  const reduceMotion = useReducedMotion();
   const [visible, setVisible] = useState(() => {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -112,16 +114,24 @@ export function IntroExperience() {
   if (!visible) return null;
 
   return (
-    <div
+    <motion.div
       className={`intro-experience is-${phase}`}
       role="dialog"
       aria-modal="true"
       aria-label="Portfolio system introduction"
+      initial={reduceMotion ? false : { opacity: 0, scale: 1.015 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="intro-grid" aria-hidden="true" />
       <IntroVisual exiting={phase === "exiting"} />
 
-      <div className="intro-copy">
+      <motion.div
+        className="intro-copy"
+        initial={reduceMotion ? false : { opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+      >
         <p className="intro-kicker">Interactive portfolio / 2026</p>
         <h2>Enter the system.</h2>
         <div className="intro-boot" aria-live="polite">
@@ -148,7 +158,7 @@ export function IntroExperience() {
             Skip intro
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

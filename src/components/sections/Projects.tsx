@@ -1,7 +1,7 @@
-import type { CSSProperties } from "react";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { getPublishedProjects, portfolio } from "@/data/portfolio";
+import { AnimatedProject } from "@/components/motion/AnimatedProject";
 
 export function Projects() {
   const projects = getPublishedProjects(portfolio.projects);
@@ -23,13 +23,9 @@ export function Projects() {
 
       <div className="project-list">
         {projects.map((project) => (
-          <article
-            className="project-showcase"
+          <AnimatedProject
             key={project.slug}
-            style={{
-              "--project-accent": project.accent,
-            } as CSSProperties}
-            data-reveal
+            accent={project.accent}
           >
             <div className="project-copy">
               <div className="project-kicker">
@@ -100,7 +96,7 @@ export function Projects() {
               )}
               <div className="art-label">CASE_{project.index}</div>
             </div>
-          </article>
+          </AnimatedProject>
         ))}
       </div>
     </section>

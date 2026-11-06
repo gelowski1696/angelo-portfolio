@@ -105,7 +105,49 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
     ],
   });
   await cdp.send("Page.navigate", { url: siteUrl });
+  await delay(250);
+  await cdp.send("Runtime.evaluate", { expression: "sessionStorage.clear()" });
+  await cdp.send("Page.navigate", { url: siteUrl });
   await delay(2500);
+
+  const introState = await cdp.send("Runtime.evaluate", {
+    expression: `JSON.stringify((() => {
+      const dialog = document.querySelector('.intro-experience');
+      const button = dialog?.querySelector('.intro-actions button');
+      const bounds = button?.getBoundingClientRect();
+      return {
+        visible: Boolean(dialog),
+        button: bounds ? { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 } : null
+      };
+    })())`,
+    returnByValue: true,
+  });
+  const intro = JSON.parse(introState.result.value);
+
+  if (intro.visible) {
+    const introScreenshot = await cdp.send("Page.captureScreenshot", {
+      format: "png",
+      captureBeyondViewport: false,
+    });
+    await writeFile(
+      path.join(outputDirectory, `${name}-intro.png`),
+      Buffer.from(introScreenshot.data, "base64"),
+    );
+
+    await cdp.send("Input.dispatchMouseEvent", {
+      type: "mousePressed",
+      button: "left",
+      clickCount: 1,
+      ...intro.button,
+    });
+    await cdp.send("Input.dispatchMouseEvent", {
+      type: "mouseReleased",
+      button: "left",
+      clickCount: 1,
+      ...intro.button,
+    });
+    await delay(1100);
+  }
 
   const evaluation = await cdp.send("Runtime.evaluate", {
     expression: `JSON.stringify({
@@ -116,7 +158,8 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       canvasCount: document.querySelectorAll('canvas').length,
       scrollWidth: document.documentElement.scrollWidth,
       clientWidth: document.documentElement.clientWidth,
-      contactSetupVisible: Boolean(document.querySelector('.contact-setup'))
+      contactSetupVisible: Boolean(document.querySelector('.contact-setup')),
+      introVisible: Boolean(document.querySelector('.intro-experience'))
     })`,
     returnByValue: true,
   });
@@ -170,6 +213,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
     name,
     viewport: `${width}x${height}`,
     reducedMotion,
+    introWasVisible: intro.visible,
     ...page,
     unnamedInteractiveElements: interactiveWithoutName.length,
   };
@@ -229,6 +273,15 @@ try {
     }
     if (result.unnamedInteractiveElements) {
       failures.push(`${result.name}: unnamed interactive elements`);
+    }
+    if (result.reducedMotion && result.introWasVisible) {
+      failures.push(`${result.name}: intro should be bypassed for reduced motion`);
+    }
+    if (!result.reducedMotion && !result.introWasVisible) {
+      failures.push(`${result.name}: intro was not shown on a first visit`);
+    }
+    if (result.introVisible) {
+      failures.push(`${result.name}: intro did not dismiss after Enter`);
     }
   }
   if (results[2].canvasCount !== 0) {

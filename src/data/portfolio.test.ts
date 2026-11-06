@@ -21,14 +21,13 @@ describe("portfolio configuration", () => {
     ]);
   });
 
-  it("publishes three real projects without placeholder labels", () => {
+  it("publishes two real projects without placeholder labels", () => {
     const projects = getPublishedProjects(portfolio.projects);
 
-    expect(projects).toHaveLength(3);
+    expect(projects).toHaveLength(2);
     expect(projects.every((project) => !project.isPlaceholder)).toBe(true);
     expect(projects.map((project) => project.slug)).toEqual([
       "vmjamtech-vpos",
-      "docuai",
       "vmjam-sales",
     ]);
   });
@@ -37,9 +36,8 @@ describe("portfolio configuration", () => {
     const projects = getPublishedProjects(portfolio.projects);
 
     expect(projects[0].demoUrl).toBe("https://vmjamtech.com/");
-    expect(projects[1].demoUrl).toBe("");
-    expect(projects[2].demoUrl).toBe("https://vmjamdocuai.cloud/");
-    expect(projects[2].linkNote).toContain("Private deployment");
+    expect(projects[1].demoUrl).toBe("https://vmjamdocuai.cloud/");
+    expect(projects[1].linkNote).toContain("Private deployment");
   });
 
   it("includes configured contact and work history", () => {

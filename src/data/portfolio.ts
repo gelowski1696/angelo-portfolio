@@ -68,25 +68,8 @@ export const portfolio: Portfolio = {
       repoUrl: "https://github.com/gelowski1696/vpos",
     },
     {
-      slug: "docuai",
-      index: "02",
-      title: "DocuAI",
-      label: "AI document workflow",
-      isPlaceholder: false,
-      summary:
-        "A role-based document generation workspace that turns structured inputs into PDF, DOCX, and XLSX outputs with AI-assisted drafting.",
-      challenge:
-        "Make document automation useful without losing access control, repeatable templates, or dependable export formats.",
-      architecture:
-        "Next.js App Router · server actions · Prisma data layer · provider-based AI",
-      stack: ["Next.js", "TypeScript", "Prisma", "OpenAI"],
-      accent: "#8fa7c7",
-      demoUrl: "",
-      repoUrl: "https://github.com/gelowski1696/docuai",
-    },
-    {
       slug: "vmjam-sales",
-      index: "03",
+      index: "02",
       title: "VMJAM Sales",
       label: "Private operations dashboard",
       isPlaceholder: false,

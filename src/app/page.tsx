@@ -1,5 +1,6 @@
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { IntroMount } from "@/components/intro/IntroMount";
 import { MotionOrchestrator } from "@/components/motion/MotionOrchestrator";
 import { About } from "@/components/sections/About";
 import { Contact } from "@/components/sections/Contact";
@@ -11,6 +12,7 @@ import { portfolio } from "@/data/portfolio";
 export default function Home() {
   return (
     <>
+      <IntroMount />
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>

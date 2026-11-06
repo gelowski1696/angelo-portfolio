@@ -310,11 +310,12 @@ button:focus-visible {
 .hero {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.12fr) minmax(20rem, 0.88fr);
+  grid-template-columns: minmax(0, 0.95fr) minmax(20rem, 1.05fr);
   align-items: center;
   min-height: 100svh;
   overflow: hidden;
-  padding: 8rem var(--page-gutter) 5rem;
+  padding: 8rem var(--page-gutter) 9rem;
+  background: #080b0e;
 }
 
 .hero::before {
@@ -323,17 +324,18 @@ button:focus-visible {
   background-image:
     linear-gradient(var(--border) 1px, transparent 1px),
     linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 4rem 4rem;
-  mask-image: linear-gradient(to bottom, black, transparent 85%);
-  opacity: 0.22;
+  z-index: 1;
+  background-size: 5rem 5rem;
+  mask-image: linear-gradient(to right, black, transparent 78%);
+  opacity: 0.13;
   content: "";
   pointer-events: none;
 }
 
 .hero-copy {
   position: relative;
-  z-index: 2;
-  max-width: 55rem;
+  z-index: 5;
+  max-width: 47rem;
 }
 
 .eyebrow,
@@ -357,7 +359,7 @@ p {
 h1 {
   max-width: 11ch;
   margin-bottom: 1.5rem;
-  font-size: clamp(4rem, 10vw, 10.5rem);
+  font-size: clamp(4rem, 8vw, 8.75rem);
   font-weight: 500;
   letter-spacing: -0.075em;
   line-height: 0.83;
@@ -382,9 +384,17 @@ h1 span {
 
 .hero-role {
   max-width: 38rem;
-  color: var(--text-muted);
-  font-size: clamp(1rem, 1.6vw, 1.35rem);
+  margin-bottom: 0.55rem;
+  color: var(--text);
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
   line-height: 1.6;
+}
+
+.hero-introduction {
+  max-width: 35rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
 }
 
 .hero-actions {
@@ -392,34 +402,6 @@ h1 span {
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-top: 2.25rem;
-}
-
-.hero-meta {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-  max-width: 42rem;
-  margin: 3.25rem 0 0;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-}
-
-.hero-meta div {
-  display: grid;
-  gap: 0.25rem;
-}
-
-.hero-meta dt,
-.hero-meta dd {
-  margin: 0;
-  font-family: var(--font-mono), monospace;
-  font-size: 0.67rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.hero-meta dt {
-  color: var(--text-muted);
 }
 
 .button {
@@ -618,6 +600,75 @@ h1 span {
   color: var(--text-muted);
   font-size: 0.85rem;
   line-height: 1.6;
+}
+
+.hero-portrait {
+  position: absolute;
+  inset: 0 0 0 auto;
+  z-index: 2;
+  width: 57%;
+  margin: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent 0, black 27%, black 100%);
+}
+
+.hero-portrait::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, #080b0e 0, transparent 35%),
+    linear-gradient(to left, transparent 55%, #080b0e 100%);
+  content: "";
+}
+
+.hero-portrait img {
+  object-fit: cover;
+  object-position: 52% 42%;
+  filter: grayscale(1) contrast(1.04) brightness(0.78);
+}
+
+.hero-portrait figcaption,
+.hero-location {
+  position: absolute;
+  z-index: 3;
+  color: rgba(238, 244, 255, 0.66);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hero-portrait figcaption {
+  top: 7rem;
+  right: var(--page-gutter);
+}
+
+.hero-display-name {
+  position: absolute;
+  right: var(--page-gutter);
+  bottom: -0.05em;
+  z-index: 4;
+  margin: 0;
+  color: rgba(238, 244, 255, 0.9);
+  font-size: clamp(4.5rem, 12.2vw, 13.5rem);
+  font-weight: 500;
+  letter-spacing: -0.085em;
+  line-height: 0.72;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hero-location {
+  top: 50%;
+  right: var(--page-gutter);
+  display: grid;
+  gap: 0.25rem;
+  text-align: right;
+}
+
+.hero-location strong {
+  color: var(--text);
+  font-weight: 500;
 }
 
 .scroll-cue {
@@ -972,17 +1023,36 @@ footer > div {
 
   .hero {
     grid-template-columns: 1fr;
-    align-content: center;
+    align-content: end;
     padding-top: 7rem;
+    padding-bottom: 8rem;
   }
 
-  .hero-visual {
+  .hero-portrait {
     position: absolute;
-    right: -8rem;
-    bottom: -3rem;
-    min-height: 26rem;
-    opacity: 0.48;
-    transform: scale(0.72);
+    inset: 0;
+    width: 100%;
+    opacity: 0.64;
+    mask-image: linear-gradient(to bottom, black 0, black 35%, transparent 82%);
+  }
+
+  .hero-portrait::after {
+    background: linear-gradient(to top, #080b0e 8%, transparent 72%);
+  }
+
+  .hero-portrait figcaption,
+  .hero-location {
+    display: none;
+  }
+
+  .hero-copy {
+    max-width: 38rem;
+  }
+
+  .hero-display-name {
+    right: auto;
+    left: var(--page-gutter);
+    font-size: clamp(4rem, 17vw, 8rem);
   }
 
   .intro,
@@ -1032,15 +1102,6 @@ footer > div {
   .hero-actions {
     align-items: stretch;
     flex-direction: column;
-  }
-
-  .hero-meta {
-    grid-template-columns: 1fr;
-  }
-
-  .system-overview {
-    right: var(--page-gutter);
-    bottom: 4.25rem;
   }
 
   .scroll-cue {

@@ -1,10 +1,23 @@
-import { ArrowDownRight, Cpu, Sparkles } from "lucide-react";
+import Image from "next/image";
+import { ArrowDownRight } from "lucide-react";
 import { portfolio } from "@/data/portfolio";
-import { HeroVisual } from "@/components/three/HeroVisual";
+import profileImage from "../../../images/profile.jpeg";
 
 export function Hero() {
   return (
     <section className="hero" id="top" aria-labelledby="hero-title">
+      <figure className="hero-portrait" data-hero-visual>
+        <Image
+          src={profileImage}
+          alt="Portrait of the portfolio owner"
+          fill
+          sizes="(max-width: 760px) 100vw, 56vw"
+          placeholder="blur"
+          fetchPriority="high"
+        />
+        <figcaption>Portrait / Profile 01</figcaption>
+      </figure>
+
       <div className="hero-copy" data-reveal>
         <p className="eyebrow">
           <span className="status-dot" aria-hidden="true" />
@@ -15,6 +28,7 @@ export function Hero() {
           <span>what’s next.</span>
         </h1>
         <p className="hero-role">{portfolio.role}</p>
+        <p className="hero-introduction">{portfolio.introduction}</p>
         <div className="hero-actions">
           <a className="button button-primary" href="#projects">
             Explore projects <ArrowDownRight aria-hidden="true" size={18} />
@@ -23,33 +37,16 @@ export function Hero() {
             Start a conversation
           </a>
         </div>
-        <dl className="hero-meta" aria-label="Portfolio overview">
-          <div>
-            <dt>Focus</dt>
-            <dd>Product systems</dd>
-          </div>
-          <div>
-            <dt>Method</dt>
-            <dd>Design + engineering</dd>
-          </div>
-          <div>
-            <dt>Mode</dt>
-            <dd>Open to the right work</dd>
-          </div>
-        </dl>
       </div>
 
-      <HeroVisual />
+      <p className="hero-display-name" aria-hidden="true">
+        {portfolio.name}
+      </p>
 
-      <details className="system-overview">
-        <summary>
-          <Cpu aria-hidden="true" size={16} /> System overview
-        </summary>
-        <div>
-          <Sparkles aria-hidden="true" size={18} />
-          <p>{portfolio.introduction}</p>
-        </div>
-      </details>
+      <div className="hero-location">
+        <span>Based in</span>
+        <strong>{portfolio.location}</strong>
+      </div>
 
       <p className="scroll-cue">
         <span aria-hidden="true" /> Scroll to inspect the system

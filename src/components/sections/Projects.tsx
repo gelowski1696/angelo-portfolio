@@ -12,11 +12,12 @@ export function Projects() {
         <p className="section-index">02 / Selected work</p>
         <div>
           <h2 id="projects-title" data-reveal>
-            Systems worth opening up.
+            Systems and sites worth opening up.
           </h2>
           <p className="section-intro" data-reveal>
-            Production platforms and focused tools shaped around real operational
-            constraints—from offline cashier flows to AI-assisted document work.
+            Production platforms and focused digital experiences shaped around
+            real operational goals—from resilient business systems to expressive,
+            conversion-ready websites.
           </p>
         </div>
       </div>

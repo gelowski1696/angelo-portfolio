@@ -86,6 +86,114 @@ export const portfolio: Portfolio = {
       demoUrl: "https://vmjamdocuai.cloud/",
       repoUrl: "",
     },
+    {
+      slug: "aurelia-developments",
+      index: "03",
+      title: "Aurelia Developments",
+      label: "Real estate concept",
+      isPlaceholder: false,
+      summary:
+        "An editorial property showcase exploring three distinct digital directions for a fictional modern real estate developer.",
+      challenge:
+        "Turn architectural imagery and multiple creative directions into a coherent, easy-to-navigate presentation.",
+      architecture:
+        "Next.js marketing site · editorial layouts · responsive image presentation",
+      stack: ["Next.js", "Editorial UI", "Responsive Design", "Vercel"],
+      accent: "#d49a73",
+      image: "/images/projects/aurelia-developments.png",
+      demoUrl: "https://real-state-web-delta.vercel.app/",
+      repoUrl: "",
+    },
+    {
+      slug: "jocel-beauty-lounge",
+      index: "04",
+      title: "Jocel Beauty Lounge",
+      label: "Beauty service website",
+      isPlaceholder: false,
+      summary:
+        "An image-led salon website introducing hair, nail, lash, and skin services with clear pathways toward appointment booking.",
+      challenge:
+        "Create a premium first impression while keeping service discovery and booking intent immediate on every screen size.",
+      architecture:
+        "Next.js marketing site · service-led navigation · responsive booking journey",
+      stack: ["Next.js", "Service UX", "Responsive Design", "Vercel"],
+      accent: "#d8ad73",
+      image: "/images/projects/jocel-beauty-lounge.png",
+      demoUrl: "https://jocel-beauty-lounge.vercel.app/",
+      repoUrl: "",
+    },
+    {
+      slug: "ligaya-guitars",
+      index: "05",
+      title: "Ligaya Guitars",
+      label: "Product storytelling",
+      isPlaceholder: false,
+      summary:
+        "A cinematic guitar brand experience pairing Philippine craftsmanship, product storytelling, and a direct path to commerce.",
+      challenge:
+        "Present detailed instruments with warmth and character without losing the practical route from discovery to purchase.",
+      architecture:
+        "Vite single-page site · immersive product narrative · external commerce pathway",
+      stack: ["Vite", "Product UI", "Responsive Design", "Commerce"],
+      accent: "#e0a651",
+      image: "/images/projects/ligaya-guitars.png",
+      demoUrl: "https://ligayaguitars.vercel.app/",
+      repoUrl: "",
+    },
+    {
+      slug: "eliseas-events",
+      index: "06",
+      title: "Elisea’s Events",
+      label: "Events service website",
+      isPlaceholder: false,
+      summary:
+        "A celebration-focused website presenting event organizing and themed food-cart rentals for Metro Manila occasions.",
+      challenge:
+        "Organize a broad service offering into a festive experience that still guides visitors quickly toward an inquiry.",
+      architecture:
+        "Next.js marketing site · service catalog · direct inquiry pathways",
+      stack: ["Next.js", "Service Catalog", "Responsive Design", "Vercel"],
+      accent: "#d48a3d",
+      image: "/images/projects/eliseas-events.png",
+      demoUrl: "https://eliseasevents.vercel.app/",
+      repoUrl: "",
+    },
+    {
+      slug: "cirok-tagaytay",
+      index: "07",
+      title: "Cirok Tagaytay",
+      label: "Hospitality website",
+      isPlaceholder: false,
+      summary:
+        "A scenic accommodation website presenting flexible Tagaytay penthouse packages, galleries, reviews, and booking routes.",
+      challenge:
+        "Lead with the destination’s atmosphere while making package comparison and booking requests easy for groups.",
+      architecture:
+        "Next.js hospitality site · package discovery · responsive booking journey",
+      stack: ["Next.js", "Hospitality UX", "Responsive Design", "Vercel"],
+      accent: "#7fa08b",
+      image: "/images/projects/cirok-tagaytay.png",
+      demoUrl: "https://ciroktagaytay.vercel.app/",
+      repoUrl: "",
+    },
+    {
+      slug: "johns-airsoft-storefront",
+      index: "08",
+      title: "John’s Airsoft",
+      label: "Commerce storefront",
+      isPlaceholder: false,
+      summary:
+        "A mobile-first tactical retail storefront focused on fast catalog discovery, trusted store information, and resilient product presentation.",
+      challenge:
+        "Make a large specialist catalog feel approachable while preserving fast discovery when richer product media is unavailable.",
+      architecture:
+        "Next.js storefront · catalog-oriented navigation · responsive product discovery",
+      stack: ["Next.js", "Commerce UX", "Responsive Design", "Vercel"],
+      accent: "#d94b4b",
+      image: "/images/projects/johns-airsoft.png",
+      demoUrl: "https://johnsairsoft-storefront.vercel.app/",
+      repoUrl: "",
+    },
   ],
   experience: [
     {

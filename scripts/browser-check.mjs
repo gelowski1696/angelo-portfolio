@@ -154,6 +154,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       title: document.title,
       h1: document.querySelector('h1')?.innerText,
       sectionCount: document.querySelectorAll('main section').length,
+      projectCount: document.querySelectorAll('.project-showcase').length,
       navigationCount: document.querySelectorAll('nav').length,
       canvasCount: document.querySelectorAll('canvas').length,
       scrollWidth: document.documentElement.scrollWidth,
@@ -181,7 +182,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
   );
 
   if (name === "desktop") {
-    for (let index = 0; index < 10; index += 1) {
+    for (let index = 0; index < 14; index += 1) {
       await cdp.send("Input.dispatchMouseEvent", {
         type: "mouseWheel",
         x: width / 2,
@@ -190,7 +191,25 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
         deltaY: 900,
       });
       await delay(180);
+      if (index === 8) {
+        const projectsEndScreenshot = await cdp.send("Page.captureScreenshot", {
+          format: "png",
+          captureBeyondViewport: false,
+        });
+        await writeFile(
+          path.join(outputDirectory, "desktop-projects-end.png"),
+          Buffer.from(projectsEndScreenshot.data, "base64"),
+        );
+      }
     }
+    const endScreenshot = await cdp.send("Page.captureScreenshot", {
+      format: "png",
+      captureBeyondViewport: false,
+    });
+    await writeFile(
+      path.join(outputDirectory, "desktop-end.png"),
+      Buffer.from(endScreenshot.data, "base64"),
+    );
     const layout = await cdp.send("Page.getLayoutMetrics");
     const fullScreenshot = await cdp.send("Page.captureScreenshot", {
       format: "png",
@@ -267,6 +286,9 @@ try {
     if (!result.h1) failures.push(`${result.name}: missing h1`);
     if (result.sectionCount !== 6) {
       failures.push(`${result.name}: expected 6 sections, found ${result.sectionCount}`);
+    }
+    if (result.projectCount !== 8) {
+      failures.push(`${result.name}: expected 8 projects, found ${result.projectCount}`);
     }
     if (result.scrollWidth > result.clientWidth) {
       failures.push(`${result.name}: horizontal overflow`);

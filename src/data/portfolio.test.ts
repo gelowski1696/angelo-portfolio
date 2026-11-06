@@ -21,14 +21,20 @@ describe("portfolio configuration", () => {
     ]);
   });
 
-  it("publishes two real projects without placeholder labels", () => {
+  it("publishes the complete project collection without placeholder labels", () => {
     const projects = getPublishedProjects(portfolio.projects);
 
-    expect(projects).toHaveLength(2);
+    expect(projects).toHaveLength(8);
     expect(projects.every((project) => !project.isPlaceholder)).toBe(true);
     expect(projects.map((project) => project.slug)).toEqual([
       "vmjamtech-vpos",
       "vmjam-sales",
+      "aurelia-developments",
+      "jocel-beauty-lounge",
+      "ligaya-guitars",
+      "eliseas-events",
+      "cirok-tagaytay",
+      "johns-airsoft-storefront",
     ]);
   });
 
@@ -38,9 +44,25 @@ describe("portfolio configuration", () => {
     expect(projects[0].demoUrl).toBe("https://vmjamtech.com/");
     expect(projects[1].demoUrl).toBe("https://vmjamdocuai.cloud/");
     expect(projects[1].linkNote).toContain("Private deployment");
+    expect(projects.map((project) => project.demoUrl)).toEqual([
+      "https://vmjamtech.com/",
+      "https://vmjamdocuai.cloud/",
+      "https://real-state-web-delta.vercel.app/",
+      "https://jocel-beauty-lounge.vercel.app/",
+      "https://ligayaguitars.vercel.app/",
+      "https://eliseasevents.vercel.app/",
+      "https://ciroktagaytay.vercel.app/",
+      "https://johnsairsoft-storefront.vercel.app/",
+    ]);
     expect(projects.map((project) => project.image)).toEqual([
       "/images/projects/vpos-overview.png",
       "/images/projects/vmjam-sales-landing.png",
+      "/images/projects/aurelia-developments.png",
+      "/images/projects/jocel-beauty-lounge.png",
+      "/images/projects/ligaya-guitars.png",
+      "/images/projects/eliseas-events.png",
+      "/images/projects/cirok-tagaytay.png",
+      "/images/projects/johns-airsoft.png",
     ]);
   });
 

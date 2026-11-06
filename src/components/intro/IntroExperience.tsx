@@ -2,6 +2,7 @@
 
 import { ArrowDownRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { IntroVisual } from "./IntroVisual";
 
 export const INTRO_SESSION_KEY = "portfolio-intro-seen";
 
@@ -79,13 +80,7 @@ export function IntroExperience() {
       aria-label="Portfolio system introduction"
     >
       <div className="intro-grid" aria-hidden="true" />
-      <div className="intro-terminal" aria-hidden="true">
-        <div className="intro-terminal-screen">
-          <span>SYS / 01</span>
-          <strong>ONLINE</strong>
-        </div>
-        <div className="intro-terminal-base" />
-      </div>
+      <IntroVisual exiting={phase === "exiting"} />
 
       <div className="intro-copy">
         <p className="intro-kicker">Interactive portfolio / 2026</p>

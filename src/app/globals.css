@@ -48,12 +48,29 @@ html[data-intro="active"] {
   mask-image: radial-gradient(circle at 70% 45%, black, transparent 72%);
 }
 
-.intro-terminal {
+.intro-visual {
   position: relative;
   justify-self: center;
   width: min(28rem, 72vw);
+  min-height: min(32rem, 68vw);
+}
+
+.intro-terminal {
+  position: absolute;
+  inset: 10% 0 auto;
   transform: perspective(60rem) rotateY(13deg) rotateX(2deg);
   transition: transform 0.85s cubic-bezier(0.65, 0, 0.15, 1), opacity 0.5s ease;
+}
+
+.intro-canvas {
+  position: absolute !important;
+  inset: -18% -38% -28%;
+  z-index: 2;
+  animation: canvas-in 0.7s ease forwards;
+}
+
+.intro-visual:has(.intro-canvas) .intro-terminal {
+  opacity: 0;
 }
 
 .intro-terminal-screen {
@@ -167,9 +184,10 @@ html[data-intro="active"] {
   animation: intro-exit 0.85s cubic-bezier(0.65, 0, 0.15, 1) forwards;
 }
 
-.intro-experience.is-exiting .intro-terminal {
+.intro-experience.is-exiting .intro-visual {
   opacity: 0;
-  transform: perspective(60rem) translateX(34vw) scale(2.4) rotateY(0);
+  transform: translateX(34vw) scale(2.4);
+  transition: transform 0.85s cubic-bezier(0.65, 0, 0.15, 1), opacity 0.5s ease;
 }
 
 @keyframes boot-line {
@@ -187,7 +205,7 @@ html[data-intro="active"] {
     align-content: end;
   }
 
-  .intro-terminal {
+  .intro-visual {
     position: absolute;
     top: 6vh;
     right: -16vw;

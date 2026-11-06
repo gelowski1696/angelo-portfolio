@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
+import { portfolio } from "@/data/portfolio";
 import "./globals.css";
 
 const display = Space_Grotesk({
@@ -15,21 +16,32 @@ const mono = IBM_Plex_Mono({
   display: "swap",
 });
 
+const siteUrl = portfolio.siteUrl || "http://localhost:3000";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://example.com"),
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "YOUR NAME — Software Engineer",
-    template: "%s — YOUR NAME",
+    default: `${portfolio.name} — Software Engineer`,
+    template: `%s — ${portfolio.name}`,
   },
   description:
     "A software engineer portfolio focused on thoughtful systems, strong interfaces, and measurable performance.",
   openGraph: {
-    title: "YOUR NAME — Software Engineer",
+    title: `${portfolio.name} — Software Engineer`,
     description:
       "Thoughtful systems, strong interfaces, and measurable performance.",
     type: "website",
+    url: siteUrl,
   },
-  robots: { index: false, follow: false },
+  twitter: {
+    card: "summary_large_image",
+    title: `${portfolio.name} — Software Engineer`,
+    description: "Thoughtful systems, strong interfaces, and measurable performance.",
+  },
+  robots: {
+    index: Boolean(portfolio.siteUrl),
+    follow: Boolean(portfolio.siteUrl),
+  },
 };
 
 export const viewport: Viewport = {

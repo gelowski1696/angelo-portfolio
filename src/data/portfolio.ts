@@ -2,6 +2,7 @@ import type { Portfolio, Project, SocialLink } from "@/types/portfolio";
 
 export const portfolio: Portfolio = {
   name: "YOUR NAME",
+  siteUrl: "",
   eyebrow: "Software engineer · Creative technologist",
   role: "Full-stack engineer focused on thoughtful digital systems.",
   tagline: "I build what’s next.",

@@ -1,5 +1,6 @@
 import { ArrowDownRight, Cpu, Sparkles } from "lucide-react";
 import { portfolio } from "@/data/portfolio";
+import { HeroVisual } from "@/components/three/HeroVisual";
 
 export function Hero() {
   return (
@@ -38,22 +39,7 @@ export function Hero() {
         </dl>
       </div>
 
-      <div className="hero-visual" aria-hidden="true" data-hero-visual>
-        <div className="core-orbit core-orbit-one" />
-        <div className="core-orbit core-orbit-two" />
-        <div className="core-shell">
-          <div className="core-screen">
-            <span>SYS/PORTFOLIO</span>
-            <div className="screen-graph">
-              <i />
-              <i />
-              <i />
-              <i />
-            </div>
-            <strong>READY</strong>
-          </div>
-        </div>
-      </div>
+      <HeroVisual />
 
       <details className="system-overview">
         <summary>

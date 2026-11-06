@@ -32,6 +32,7 @@ export type Experience = {
 
 export type Portfolio = {
   name: string;
+  siteUrl: string;
   eyebrow: string;
   role: string;
   tagline: string;

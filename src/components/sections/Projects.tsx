@@ -66,6 +66,9 @@ export function Projects() {
                   {project.linkNote ?? "Public links are not available"}
                 </p>
               )}
+              {project.linkNote && (project.demoUrl || project.repoUrl) ? (
+                <p className="project-unconfigured">{project.linkNote}</p>
+              ) : null}
             </div>
 
             <div

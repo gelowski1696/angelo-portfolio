@@ -38,6 +38,7 @@ describe("portfolio configuration", () => {
 
     expect(projects[0].demoUrl).toBe("https://vmjamtech.com/");
     expect(projects[1].demoUrl).toBe("");
+    expect(projects[2].demoUrl).toBe("https://vmjamdocuai.cloud/");
     expect(projects[2].linkNote).toContain("Private deployment");
   });
 

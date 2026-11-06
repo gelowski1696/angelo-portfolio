@@ -90,6 +90,10 @@
   margin-top: 1.75rem;
 }
 
+.project-actions + .project-unconfigured {
+  margin-top: 0.75rem;
+}
+
 .project-art {
   position: relative;
   min-height: clamp(24rem, 46vw, 42rem);

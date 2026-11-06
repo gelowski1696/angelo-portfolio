@@ -53,7 +53,7 @@ the interface. Search indexing remains disabled until `siteUrl` is configured.
 - `src/app/` — App Router page, metadata, global visual system, and generated assets
 - `src/components/sections/` — server-rendered portfolio content
 - `src/components/layout/` — navigation and footer
-- `src/components/three/` — client-only procedural scene and static fallback
+- `src/components/intro/` — accessible intro gate, procedural scene, and static fallback
 - `src/components/motion/` — GSAP orchestration with cleanup
 - `src/data/portfolio.ts` — typed content source of truth
 - `src/lib/capabilities.ts` — WebGL, reduced-motion, and Save-Data policy

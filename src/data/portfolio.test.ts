@@ -38,6 +38,10 @@ describe("portfolio configuration", () => {
     expect(projects[0].demoUrl).toBe("https://vmjamtech.com/");
     expect(projects[1].demoUrl).toBe("https://vmjamdocuai.cloud/");
     expect(projects[1].linkNote).toContain("Private deployment");
+    expect(projects.map((project) => project.image)).toEqual([
+      "/images/projects/vpos-overview.png",
+      "/images/projects/vmjam-sales-landing.png",
+    ]);
   });
 
   it("includes configured contact and work history", () => {

@@ -81,6 +81,7 @@ export const portfolio: Portfolio = {
         "Angular application · authenticated session · production cloud deployment",
       stack: ["Angular", "TypeScript", "Responsive UI", "Cloud"],
       accent: "#c66d45",
+      image: "/images/projects/vmjam-sales-landing.png",
       linkNote: "Private deployment · authenticated access required",
       demoUrl: "https://vmjamdocuai.cloud/",
       repoUrl: "",

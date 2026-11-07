@@ -104,11 +104,12 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       },
     ],
   });
-  await cdp.send("Page.navigate", { url: siteUrl });
-  await delay(250);
+  const checkUrl = `${siteUrl}?browser-check=${name}-${Date.now()}`;
+  await cdp.send("Page.navigate", { url: checkUrl });
+  await delay(750);
   await cdp.send("Runtime.evaluate", { expression: "sessionStorage.clear()" });
-  await cdp.send("Page.navigate", { url: siteUrl });
-  await delay(2500);
+  await cdp.send("Page.reload", { ignoreCache: true });
+  await delay(3000);
 
   const introState = await cdp.send("Runtime.evaluate", {
     expression: `JSON.stringify((() => {
@@ -162,10 +163,14 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       clientWidth: document.documentElement.clientWidth,
       carouselScrollWidth: document.querySelector('.project-carousel-track')?.scrollWidth ?? 0,
       carouselClientWidth: document.querySelector('.project-carousel-track')?.clientWidth ?? 0,
+      projectSlideWidth: document.querySelector('.project-slide')?.getBoundingClientRect().width ?? 0,
       projectImageCount: document.querySelectorAll('.project-art-image').length,
+      motionBackgroundLayers: document.querySelectorAll('.project-motion-background > span').length,
+      autoplayControlVisible: Boolean(document.querySelector('[aria-label="Pause project autoplay"]')),
       containedProjectImages: [...document.querySelectorAll('.project-art-image')]
         .every((image) => getComputedStyle(image).objectFit === 'contain'),
       projectCounter: document.querySelector('.project-carousel-counter')?.textContent?.trim(),
+      nextProjectDisabled: document.querySelector('[aria-label="Next project"]')?.disabled ?? true,
       contactSetupVisible: Boolean(document.querySelector('.contact-setup')),
       introVisible: Boolean(document.querySelector('.intro-experience'))
     })`,
@@ -250,6 +255,14 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       returnByValue: true,
     });
     page.carouselAfterNext = JSON.parse(carouselState.result.value);
+    const nextButtonAfterClick = await cdp.send("Runtime.evaluate", {
+      expression: `JSON.stringify({
+        counter: document.querySelector('.project-carousel-counter')?.textContent?.trim(),
+        disabled: document.querySelector('[aria-label="Next project"]')?.disabled ?? true
+      })`,
+      returnByValue: true,
+    });
+    page.nextButtonAfterClick = JSON.parse(nextButtonAfterClick.result.value);
     const projectsNextScreenshot = await cdp.send("Page.captureScreenshot", {
       format: "png",
       captureBeyondViewport: false,
@@ -257,6 +270,66 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
     await writeFile(
       path.join(outputDirectory, "desktop-carousel-next.png"),
       Buffer.from(projectsNextScreenshot.data, "base64"),
+    );
+
+    const dragState = await cdp.send("Runtime.evaluate", {
+      expression: `JSON.stringify((() => {
+        const track = document.querySelector('.project-carousel-track');
+        const bounds = track?.getBoundingClientRect();
+        if (!bounds) return null;
+        const startX = Math.min(innerWidth - 90, bounds.right - 90);
+        return {
+          start: { x: startX, y: Math.min(innerHeight - 100, bounds.top + 220) },
+          endX: Math.max(100, startX - 720)
+        };
+      })())`,
+      returnByValue: true,
+    });
+    const drag = JSON.parse(dragState.result.value);
+    if (drag) {
+      await cdp.send("Input.dispatchMouseEvent", {
+        type: "mousePressed",
+        button: "left",
+        buttons: 1,
+        clickCount: 1,
+        ...drag.start,
+      });
+      for (let step = 1; step <= 5; step += 1) {
+        await cdp.send("Input.dispatchMouseEvent", {
+          type: "mouseMoved",
+          button: "left",
+          buttons: 1,
+          x: drag.start.x + ((drag.endX - drag.start.x) * step) / 5,
+          y: drag.start.y,
+        });
+        await delay(60);
+      }
+      await cdp.send("Input.dispatchMouseEvent", {
+        type: "mouseReleased",
+        button: "left",
+        buttons: 0,
+        clickCount: 1,
+        x: drag.endX,
+        y: drag.start.y,
+      });
+      await delay(1000);
+    }
+
+    const swipeState = await cdp.send("Runtime.evaluate", {
+      expression: `JSON.stringify({
+        counter: document.querySelector('.project-carousel-counter')?.textContent?.trim(),
+        scrollLeft: document.querySelector('.project-carousel-track')?.scrollLeft ?? 0
+      })`,
+      returnByValue: true,
+    });
+    page.carouselAfterSwipe = JSON.parse(swipeState.result.value);
+    const projectsSwipeScreenshot = await cdp.send("Page.captureScreenshot", {
+      format: "png",
+      captureBeyondViewport: false,
+    });
+    await writeFile(
+      path.join(outputDirectory, "desktop-carousel-swipe.png"),
+      Buffer.from(projectsSwipeScreenshot.data, "base64"),
     );
 
     await cdp.send("Runtime.evaluate", {
@@ -358,6 +431,12 @@ try {
     if (result.projectImageCount !== result.projectCount) {
       failures.push(`${result.name}: expected an image for every project`);
     }
+    if (result.motionBackgroundLayers !== 4) {
+      failures.push(`${result.name}: project motion background is incomplete`);
+    }
+    if (!result.autoplayControlVisible) {
+      failures.push(`${result.name}: project autoplay is not enabled by default`);
+    }
     if (!result.containedProjectImages) {
       failures.push(`${result.name}: project images are not using uncropped contain sizing`);
     }
@@ -376,6 +455,12 @@ try {
   }
   if (!results[0].carouselAfterNext?.scrollLeft || results[0].carouselAfterNext.counter !== "02 / 08") {
     failures.push("desktop: next control did not advance the horizontal carousel");
+  }
+  if (results[0].projectSlideWidth > 1100) {
+    failures.push(`desktop: project slide is still oversized at ${results[0].projectSlideWidth}px`);
+  }
+  if (results[0].carouselAfterSwipe?.scrollLeft <= results[0].carouselAfterNext?.scrollLeft) {
+    failures.push("desktop: pointer swipe did not advance the horizontal carousel");
   }
   if (results[2].introWasVisible && results[0].introHasCanvas !== results[2].introHasCanvas) {
     failures.push("reduced-motion: intro effects did not match the normal motion mode");

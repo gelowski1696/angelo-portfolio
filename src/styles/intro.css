@@ -106,7 +106,7 @@ html[data-intro="active"] {
   position: absolute !important;
   inset: -18% -18% -20%;
   z-index: 2;
-  animation: canvas-in 1.2s cubic-bezier(0.34, 1.4, 0.5, 1) 0.15s both;
+  animation: canvas-in 0.7s ease-out both;
 }
 
 .intro-terminal {
@@ -497,8 +497,8 @@ html[data-intro="active"] {
 }
 
 @keyframes canvas-in {
-  from { opacity: 0; transform: scale(0.5) translateZ(-8rem); }
-  to { opacity: 1; transform: scale(1) translateZ(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes intro-surface-in {

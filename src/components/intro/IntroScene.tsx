@@ -1,8 +1,8 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Edges } from "@react-three/drei";
-import { Component, useRef } from "react";
+import { Edges, RoundedBox } from "@react-three/drei";
+import { Component, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import * as THREE from "three";
 
@@ -27,6 +27,97 @@ class IntroSceneBoundary extends Component<
 
 type PointerPosition = { x: number; y: number };
 
+const SCREEN_WIDTH = 1024;
+const SCREEN_HEIGHT = 640;
+
+function drawTerminalScreen(
+  canvas: HTMLCanvasElement,
+  progress: number,
+) {
+  const context = canvas.getContext("2d");
+  if (!context) return;
+
+  canvas.width = SCREEN_WIDTH;
+  canvas.height = SCREEN_HEIGHT;
+
+  const safeProgress = Math.max(0, Math.min(100, progress));
+  const background = context.createLinearGradient(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+  background.addColorStop(0, "#ffd0a8");
+  background.addColorStop(0.58, "#f4a877");
+  background.addColorStop(1, "#e98152");
+  context.fillStyle = background;
+  context.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+  context.strokeStyle = "rgba(12, 26, 54, 0.13)";
+  context.lineWidth = 2;
+  for (let y = 8; y < SCREEN_HEIGHT; y += 12) {
+    context.beginPath();
+    context.moveTo(0, y);
+    context.lineTo(SCREEN_WIDTH, y);
+    context.stroke();
+  }
+
+  const glow = context.createRadialGradient(720, 90, 0, 720, 90, 260);
+  glow.addColorStop(0, "rgba(255, 255, 255, 0.58)");
+  glow.addColorStop(1, "rgba(255, 255, 255, 0)");
+  context.fillStyle = glow;
+  context.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+  context.fillStyle = "#0c1a36";
+  context.textBaseline = "middle";
+  context.font = "700 28px 'Courier New', monospace";
+  context.fillText("SYS / 01", 64, 66);
+  context.textAlign = "right";
+  context.fillText(safeProgress >= 100 ? "READY" : "INIT", 960, 66);
+
+  context.textAlign = "left";
+  context.font = "700 34px 'Courier New', monospace";
+  context.fillText("CREATIVE INTERFACE", 64, 132);
+
+  context.font = "900 142px Arial, sans-serif";
+  context.letterSpacing = "-7px";
+  context.fillText(safeProgress >= 100 ? "ONLINE" : "BOOTING", 58, 310);
+  context.letterSpacing = "0px";
+
+  context.font = "700 25px 'Courier New', monospace";
+  context.fillText(
+    safeProgress >= 100
+      ? "PORTFOLIO ARCHIVE MOUNTED"
+      : `INITIALIZING / ${String(safeProgress).padStart(3, "0")}%`,
+    64,
+    416,
+  );
+
+  const segmentCount = 20;
+  const litSegments = Math.floor((safeProgress / 100) * segmentCount);
+  const segmentGap = 9;
+  const segmentWidth = 39;
+  for (let index = 0; index < segmentCount; index += 1) {
+    context.fillStyle = index < litSegments ? "#0c1a36" : "rgba(12, 26, 54, 0.2)";
+    context.fillRect(64 + index * (segmentWidth + segmentGap), 505, segmentWidth, 30);
+  }
+
+  context.fillStyle = "rgba(12, 26, 54, 0.72)";
+  context.font = "700 20px 'Courier New', monospace";
+  context.fillText("PORTFOLIO.SYS / BUILD 2026", 64, 584);
+}
+
+function createTerminalTexture() {
+  const canvas = document.createElement("canvas");
+  drawTerminalScreen(canvas, 0);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.generateMipmaps = false;
+  return texture;
+}
+
+function updateTerminalTexture(texture: THREE.CanvasTexture, progress: number) {
+  drawTerminalScreen(texture.image, progress);
+  texture.needsUpdate = true;
+}
+
 function SceneReady({ onReady }: { onReady: () => void }) {
   const reported = useRef(false);
 
@@ -39,10 +130,26 @@ function SceneReady({ onReady }: { onReady: () => void }) {
   return null;
 }
 
+function TerminalScreen({ progress }: { progress: number }) {
+  const [texture] = useState(createTerminalTexture);
+  const displayProgress = Math.min(100, Math.floor(progress / 5) * 5);
+
+  useEffect(() => {
+    updateTerminalTexture(texture, displayProgress);
+  }, [displayProgress, texture]);
+
+  useEffect(() => () => texture.dispose(), [texture]);
+
+  return (
+    <mesh position={[0, 0.24, 0.505]}>
+      <planeGeometry args={[2.82, 1.76]} />
+      <meshBasicMaterial map={texture} toneMapped={false} />
+    </mesh>
+  );
+}
+
 function Terminal({ exiting, pointer, progress }: { exiting: boolean; pointer: PointerPosition; progress: number }) {
   const scene = useRef<THREE.Group>(null);
-  const screen = useRef<THREE.MeshStandardMaterial>(null);
-  const litSegments = Math.floor(progress / 5);
 
   useFrame((state, delta) => {
     const targetZ = exiting ? 4.5 : 15;
@@ -80,71 +187,55 @@ function Terminal({ exiting, pointer, progress }: { exiting: boolean; pointer: P
       );
     }
 
-    if (screen.current) {
-      screen.current.emissiveIntensity = 1.35 + Math.sin(state.clock.elapsedTime * 2.2) * 0.12;
-    }
   });
 
   return (
-    <group ref={scene} position={[0, 0, 0]}>
-      <mesh position={[0, -1.35, 0.2]} receiveShadow>
-        <boxGeometry args={[2.4, 0.2, 1.5]} />
-        <meshStandardMaterial color="#10213a" metalness={0.7} roughness={0.3} />
-        <Edges color="#f28c5a" threshold={15} />
-      </mesh>
+    <group ref={scene} position={[0, 0.35, 0]}>
+      <RoundedBox args={[3.72, 2.88, 0.74]} radius={0.13} smoothness={4} castShadow receiveShadow>
+        <meshStandardMaterial color="#13243e" metalness={0.42} roughness={0.48} />
+        <Edges color="#f28c5a" threshold={22} />
+      </RoundedBox>
 
-      <group position={[0, 0.1, 0]}>
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[3.4, 2.5, 1.1]} />
-          <meshStandardMaterial color="#10213a" metalness={0.78} roughness={0.22} />
-          <Edges color="#f28c5a" threshold={15} />
-        </mesh>
-        <mesh position={[0, 0.1, 0.57]}>
-          <boxGeometry args={[3, 1.84, 0.025]} />
-          <meshStandardMaterial
-            ref={screen}
-            color="#0a1a30"
-            emissive="#f28c5a"
-            emissiveIntensity={1.35}
-            roughness={0.16}
+      <RoundedBox args={[3.18, 2.14, 0.15]} radius={0.08} smoothness={3} position={[0, 0.24, 0.41]}>
+        <meshStandardMaterial color="#050b16" metalness={0.62} roughness={0.32} />
+        <Edges color="#35547a" threshold={22} />
+      </RoundedBox>
+      <TerminalScreen progress={progress} />
+
+      <mesh position={[-1.47, -1.06, 0.42]}>
+        <circleGeometry args={[0.08, 20]} />
+        <meshBasicMaterial color="#f28c5a" toneMapped={false} />
+      </mesh>
+      {[0, 1].map((index) => (
+        <mesh key={index} position={[-1.2 + index * 0.24, -1.06, 0.42]}>
+          <circleGeometry args={[0.045, 16]} />
+          <meshBasicMaterial
+            color={index === 0 || progress >= 100 ? "#f4a877" : "#27415f"}
+            toneMapped={false}
           />
         </mesh>
-        {Array.from({ length: 20 }, (_, index) => (
-          <mesh key={index} position={[-1.22 + index * 0.128, -0.66, 0.6]}>
-            <boxGeometry args={[0.08, 0.09, 0.03]} />
-            <meshBasicMaterial color={index < litSegments ? "#f4a877" : "#10213a"} />
-          </mesh>
-        ))}
-        {[0.62, 0.18, -0.28, -0.62].map((y, index) => (
-          <mesh key={y} position={[-0.62 + index * 0.38, y, 0.61]}>
-            <boxGeometry args={[0.12, 0.48 + index * 0.13, 0.03]} />
-            <meshBasicMaterial color="#ffb18a" transparent opacity={0.72} />
-          </mesh>
-        ))}
-        <mesh position={[0, -1.4, 0]}>
-          <boxGeometry args={[0.32, 0.72, 0.28]} />
-          <meshStandardMaterial color="#10213a" metalness={0.8} roughness={0.25} />
-        </mesh>
-        <mesh position={[0, -1.78, 0.14]}>
-          <boxGeometry args={[1.5, 0.1, 0.72]} />
-          <meshStandardMaterial color="#172b47" metalness={0.75} roughness={0.25} />
-        </mesh>
-      </group>
-
-      {[[-0.46, -1.12], [0, -1.12], [0.46, -1.12]].map(([x, z], index) => (
-        <mesh key={x} position={[x, -0.86, z]}>
-          <sphereGeometry args={[0.055, 12, 12]} />
-          <meshBasicMaterial color={index === 0 || (index === 1 && progress >= 55) || (index === 2 && progress >= 100) ? "#f28c5a" : "#162743"} />
+      ))}
+      {Array.from({ length: 7 }, (_, index) => (
+        <mesh key={index} position={[0.48 + index * 0.17, -1.06, 0.43]}>
+          <boxGeometry args={[0.1, 0.035, 0.025]} />
+          <meshBasicMaterial color="#6b82a1" />
         </mesh>
       ))}
+
+      <RoundedBox args={[0.38, 0.72, 0.34]} radius={0.05} smoothness={3} position={[0, -1.76, -0.02]} castShadow>
+        <meshStandardMaterial color="#10213a" metalness={0.58} roughness={0.42} />
+      </RoundedBox>
+      <RoundedBox args={[2.25, 0.2, 1.08]} radius={0.07} smoothness={3} position={[0, -2.14, 0.1]} castShadow receiveShadow>
+        <meshStandardMaterial color="#172c49" metalness={0.58} roughness={0.38} />
+        <Edges color="#f28c5a" threshold={22} />
+      </RoundedBox>
     </group>
   );
 }
 function GlassLayers() {
   const layers = [
-    { size: [4.6, 3.8] as const, position: [0, 0.1, -1.5] as const, rotation: 0.2, opacity: 0.2 },
-    { size: [5.4, 4.4] as const, position: [-0.3, 0, -3] as const, rotation: 0.1, opacity: 0.12 },
-    { size: [6.4, 5] as const, position: [0.1, -0.1, -4.6] as const, rotation: -0.07, opacity: 0.07 },
+    { size: [4.5, 3.75] as const, position: [0.12, 0.08, -0.65] as const, rotation: 0.08, opacity: 0.08 },
+    { size: [5.2, 4.35] as const, position: [-0.18, 0, -1.25] as const, rotation: -0.06, opacity: 0.045 },
   ];
 
   return (
@@ -152,7 +243,7 @@ function GlassLayers() {
       {layers.map((layer, index) => (
         <mesh key={index} position={layer.position} rotation={[0, layer.rotation, 0]}>
           <planeGeometry args={layer.size} />
-          <meshBasicMaterial color="#17345e" transparent opacity={layer.opacity} side={THREE.DoubleSide} />
+          <meshBasicMaterial color="#17345e" transparent opacity={layer.opacity} side={THREE.DoubleSide} depthWrite={false} />
           <Edges color="#f28c5a" threshold={15} />
         </mesh>
       ))}
@@ -170,15 +261,15 @@ function OrbitRing() {
   });
 
   return (
-    <group ref={ring} position={[0, -0.4, -0.8]} rotation={[1.28, 0, 0]}>
+    <group ref={ring} position={[0, -0.12, -1.5]} rotation={[0.08, 0.16, 0]} scale={[1, 0.58, 1]}>
       <mesh>
-        <torusGeometry args={[3, 0.018, 8, 96]} />
-        <meshBasicMaterial color="#f28c5a" transparent opacity={0.42} />
+        <torusGeometry args={[2.85, 0.018, 8, 96]} />
+        <meshBasicMaterial color="#f28c5a" transparent opacity={0.38} depthWrite={false} />
       </mesh>
       {[0, Math.PI / 2, Math.PI, Math.PI * 1.5].map((angle, index) => (
-        <mesh key={angle} position={[Math.cos(angle) * 3, Math.sin(angle) * 3, 0]} rotation={[0, 0, -1.28]}>
-          <boxGeometry args={[0.72, 0.22, 0.04]} />
-          <meshBasicMaterial color={index === 0 ? "#f4a877" : "#244064"} transparent opacity={0.9} />
+        <mesh key={angle} position={[Math.cos(angle) * 2.85, Math.sin(angle) * 2.85, 0]}>
+          <boxGeometry args={[0.58, 0.16, 0.035]} />
+          <meshBasicMaterial color={index === 0 ? "#f4a877" : "#244064"} transparent opacity={0.86} depthWrite={false} />
         </mesh>
       ))}
     </group>
@@ -194,11 +285,11 @@ function FloorGrid() {
   });
 
   return (
-    <group ref={grid} position={[0, -1.46, -1]} rotation={[-Math.PI / 2, 0, 0]}>
-      <gridHelper args={[18, 26, "#f28c5a", "#17345e"]} rotation={[Math.PI / 2, 0, 0]} />
-      <mesh position={[0, 0, 0.1]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[2.4, 48]} />
-        <meshBasicMaterial color="#f28c5a" transparent opacity={0.08} />
+    <group ref={grid} position={[0, -1.83, -0.8]}>
+      <gridHelper args={[9, 18, "#b86547", "#17345e"]} />
+      <mesh position={[0, 0.015, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[2.3, 48]} />
+        <meshBasicMaterial color="#f28c5a" transparent opacity={0.055} depthWrite={false} />
       </mesh>
     </group>
   );
@@ -206,9 +297,9 @@ function FloorGrid() {
 
 function Particles() {
   const particles = useRef<Array<THREE.Mesh | null>>([]);
-  const positions = Array.from({ length: 22 }, (_, index) => {
+  const positions = Array.from({ length: 14 }, (_, index) => {
     const angle = index * 2.39996;
-    const radius = 2.8 + (index % 5) * 0.5;
+    const radius = 2.8 + (index % 4) * 0.5;
     return [Math.cos(angle) * radius, ((index % 7) - 3) * 0.45, -3.2 + (index % 6) * 0.9] as const;
   });
 
@@ -255,10 +346,10 @@ export function IntroScene({
         shadows
       >
         <SceneReady onReady={onReady} />
-        <ambientLight intensity={0.25} color="#8fa7c7" />
-        <directionalLight castShadow color="#e5ecf5" intensity={2.2} position={[3, 5, 4]} />
-        <pointLight color="#f28c5a" intensity={6} distance={8} position={[0, 1, 2]} />
-        <pointLight color="#4a7bd0" intensity={5} distance={8} position={[-3, 1, -3]} />
+        <ambientLight intensity={0.58} color="#9db4d2" />
+        <directionalLight castShadow color="#f4f1ea" intensity={1.8} position={[4, 6, 5]} />
+        <pointLight color="#f28c5a" intensity={3.4} distance={7} position={[0, 1, 3]} />
+        <pointLight color="#4a7bd0" intensity={2.8} distance={8} position={[-3, 2, -2]} />
         <GlassLayers />
         <OrbitRing />
         <FloorGrid />

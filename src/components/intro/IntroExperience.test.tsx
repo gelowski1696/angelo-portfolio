@@ -25,7 +25,7 @@ describe("IntroExperience", () => {
     vi.restoreAllMocks();
   });
 
-  it("shows on a first visit and remembers when it is skipped", async () => {
+  it("shows on a first visit and remembers after entering", async () => {
     const user = userEvent.setup();
     render(<IntroExperience />);
 
@@ -34,7 +34,7 @@ describe("IntroExperience", () => {
     });
     expect(intro).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /skip intro/i }));
+    await user.click(screen.getByRole("button", { name: /enter portfolio/i }));
 
     await waitFor(() => expect(intro).not.toBeInTheDocument());
     expect(sessionStorage.getItem(INTRO_SESSION_KEY)).toBe("1");
@@ -90,12 +90,12 @@ describe("IntroExperience", () => {
     const intro = await screen.findByRole("dialog", {
       name: /portfolio system introduction/i,
     });
-    await user.click(screen.getByRole("button", { name: /skip intro/i }));
+    await user.click(screen.getByRole("button", { name: /enter portfolio/i }));
 
     await waitFor(() => expect(intro).not.toBeInTheDocument());
   });
 
-  it("disables its controls while entering the portfolio", async () => {
+  it("disables the enter control while entering the portfolio", async () => {
     const user = userEvent.setup();
     render(<IntroExperience />);
 
@@ -105,6 +105,5 @@ describe("IntroExperience", () => {
     await user.click(enter);
 
     expect(enter).toBeDisabled();
-    expect(screen.getByRole("button", { name: /skip intro/i })).toBeDisabled();
   });
 });

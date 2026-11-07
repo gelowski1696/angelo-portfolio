@@ -84,7 +84,7 @@ export function IntroExperience() {
     };
   }, [visible]);
 
-  const finish = useCallback((immediate: boolean) => {
+  const finish = useCallback((immediate = false) => {
     if (phase === "exiting") return;
     rememberIntro();
     if (immediate) {
@@ -143,13 +143,6 @@ export function IntroExperience() {
             onClick={() => finish(false)}
           >
             Enter portfolio <ArrowDownRight aria-hidden="true" size={18} />
-          </button>
-          <button
-            type="button"
-            disabled={phase === "exiting"}
-            onClick={() => finish(true)}
-          >
-            Skip intro
           </button>
         </div>
       </motion.div>

@@ -8,7 +8,6 @@ type ProjectSlideProps = {
   active: boolean;
   index: number;
   project: Project;
-  register: (element: HTMLElement | null) => void;
   total: number;
 };
 
@@ -23,23 +22,19 @@ export function ProjectSlide({
   active,
   index,
   project,
-  register,
   total,
 }: ProjectSlideProps) {
   return (
     <motion.article
-      ref={register}
-      className="project-slide"
+      className={`project-slide${active ? " is-active" : ""}`}
       role="group"
       aria-roledescription="slide"
       aria-label={`Project ${index + 1} of ${total}: ${project.title}`}
+      aria-hidden={!active}
+      inert={!active ? true : undefined}
       style={{ "--project-accent": project.accent } as CSSProperties}
-      initial={{ opacity: 0.42, scale: 0.94, y: 42 }}
-      animate={{
-        opacity: active ? 1 : 0.55,
-        scale: active ? 1 : 0.965,
-        y: active ? 0 : 14,
-      }}
+      initial={false}
+      animate={{ opacity: active ? 1 : 0.72 }}
       transition={springTransition}
     >
       <figure className="project-art">
@@ -73,6 +68,12 @@ export function ProjectSlide({
         </div>
 
         <div className="project-copy-meta">
+          <dl className="project-copy-challenge">
+            <div>
+              <dt>Client challenge</dt>
+              <dd>{project.challenge}</dd>
+            </div>
+          </dl>
           <dl>
             <div>
               <dt>Architecture</dt>

@@ -1,6 +1,8 @@
 "use client";
 
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
+import { motion } from "motion/react";
+import type { CSSProperties } from "react";
 import type { Project } from "@/types/portfolio";
 import { ProjectMotionBackground } from "./ProjectMotionBackground";
 import { ProjectSlide } from "./ProjectSlide";
@@ -15,17 +17,13 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
   const {
     activeIndex,
     autoPlayEnabled,
-    finishPointerDrag,
     goToProject,
-    handlePointerDown,
-    handlePointerMove,
-    handleScroll,
-    isDragging,
-    preventDraggedClick,
-    registerSlide,
-    setIsHovering,
+    handleDragEnd,
+    handleKeyDown,
+    nextProject,
+    previousProject,
     toggleAutoPlay,
-    trackRef,
+    viewportRef,
   } = useProjectCarousel(total);
 
   if (total === 0) return null;
@@ -33,18 +31,19 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
   return (
     <div
       className="project-carousel"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
     >
       <ProjectMotionBackground />
 
       <div className="project-carousel-toolbar">
-        <p
-          className="project-carousel-counter"
-          aria-live={autoPlayEnabled ? "off" : "polite"}
-        >
-          {String(activeIndex + 1).padStart(2, "0")} /{" "}
-          {String(total).padStart(2, "0")}
+        <div className="project-carousel-heading">
+          <p className="project-carousel-eyebrow">Selected work / case studies</p>
+          <p className="project-carousel-counter" aria-live="polite">
+            {String(activeIndex + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </p>
+        </div>
+
+        <p className="project-carousel-current" aria-live="polite">
+          {projects[activeIndex]?.title}
         </p>
 
         <div className="project-carousel-progress" role="group" aria-label="Choose a project">
@@ -81,16 +80,14 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
           <button
             type="button"
             aria-label="Previous project"
-            disabled={activeIndex === 0}
-            onClick={() => goToProject(activeIndex - 1)}
+            onClick={previousProject}
           >
             <ArrowLeft aria-hidden="true" size={19} />
           </button>
           <button
             type="button"
             aria-label="Next project"
-            disabled={activeIndex === total - 1}
-            onClick={() => goToProject(activeIndex + 1)}
+            onClick={nextProject}
           >
             <ArrowRight aria-hidden="true" size={19} />
           </button>
@@ -98,28 +95,35 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
       </div>
 
       <div
-        ref={trackRef}
-        className={`project-carousel-track${isDragging ? " is-dragging" : ""}`}
+        ref={viewportRef}
+        className="project-carousel-viewport"
         role="region"
         aria-roledescription="carousel"
         aria-label="Selected projects"
-        onClickCapture={preventDraggedClick}
-        onPointerCancel={finishPointerDrag}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={finishPointerDrag}
-        onScroll={handleScroll}
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
       >
-        {projects.map((project, index) => (
-          <ProjectSlide
-            key={project.slug}
-            active={index === activeIndex}
-            index={index}
-            project={project}
-            register={(element) => registerSlide(index, element)}
-            total={total}
-          />
-        ))}
+        <motion.div
+          className="project-carousel-track"
+          style={{ "--project-count": total } as CSSProperties}
+          animate={{ x: `-${(activeIndex * 100) / total}%` }}
+          transition={{ type: "spring", stiffness: 260, damping: 32, mass: 0.9 }}
+          drag="x"
+          dragDirectionLock
+          dragElastic={0.12}
+          dragMomentum={false}
+          onDragEnd={handleDragEnd}
+        >
+          {projects.map((project, index) => (
+            <ProjectSlide
+              key={project.slug}
+              active={index === activeIndex}
+              index={index}
+              project={project}
+              total={total}
+            />
+          ))}
+        </motion.div>
       </div>
     </div>
   );

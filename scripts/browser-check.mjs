@@ -215,8 +215,8 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       canvasCount: document.querySelectorAll('canvas').length,
       scrollWidth: document.documentElement.scrollWidth,
       clientWidth: document.documentElement.clientWidth,
-      carouselScrollWidth: document.querySelector('.project-carousel-track')?.scrollWidth ?? 0,
-      carouselClientWidth: document.querySelector('.project-carousel-track')?.clientWidth ?? 0,
+      carouselScrollWidth: document.querySelector('.project-carousel-track')?.getBoundingClientRect().width ?? 0,
+      carouselClientWidth: document.querySelector('.project-carousel-viewport')?.clientWidth ?? 0,
       projectSlideWidth: document.querySelector('.project-slide')?.getBoundingClientRect().width ?? 0,
       projectImageCount: document.querySelectorAll('.project-art-image').length,
       motionBackgroundLayers: document.querySelectorAll('.project-motion-background > span').length,
@@ -227,7 +227,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       containedProjectImages: [...document.querySelectorAll('.project-art-image')]
         .every((image) => getComputedStyle(image).objectFit === 'contain'),
       projectCounter: document.querySelector('.project-carousel-counter')?.textContent?.trim(),
-      nextProjectDisabled: document.querySelector('[aria-label="Next project"]')?.disabled ?? true,
+      nextProjectDisabled: document.querySelector('[aria-label="Next project"]')?.disabled ?? false,
       contactSetupVisible: Boolean(document.querySelector('.contact-setup')),
       introVisible: Boolean(document.querySelector('.intro-experience'))
     })`,
@@ -307,7 +307,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
     const carouselState = await cdp.send("Runtime.evaluate", {
       expression: `JSON.stringify({
         counter: document.querySelector('.project-carousel-counter')?.textContent?.trim(),
-        scrollLeft: document.querySelector('.project-carousel-track')?.scrollLeft ?? 0
+        current: document.querySelector('.project-carousel-current')?.textContent?.trim()
       })`,
       returnByValue: true,
     });
@@ -315,7 +315,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
     const nextButtonAfterClick = await cdp.send("Runtime.evaluate", {
       expression: `JSON.stringify({
         counter: document.querySelector('.project-carousel-counter')?.textContent?.trim(),
-        disabled: document.querySelector('[aria-label="Next project"]')?.disabled ?? true
+        disabled: document.querySelector('[aria-label="Next project"]')?.disabled ?? false
       })`,
       returnByValue: true,
     });
@@ -331,8 +331,8 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
 
     const dragState = await cdp.send("Runtime.evaluate", {
       expression: `JSON.stringify((() => {
-        const track = document.querySelector('.project-carousel-track');
-        const bounds = track?.getBoundingClientRect();
+        const viewport = document.querySelector('.project-carousel-viewport');
+        const bounds = viewport?.getBoundingClientRect();
         if (!bounds) return null;
         const startX = Math.min(innerWidth - 90, bounds.right - 90);
         return {
@@ -375,7 +375,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
     const swipeState = await cdp.send("Runtime.evaluate", {
       expression: `JSON.stringify({
         counter: document.querySelector('.project-carousel-counter')?.textContent?.trim(),
-        scrollLeft: document.querySelector('.project-carousel-track')?.scrollLeft ?? 0
+        current: document.querySelector('.project-carousel-current')?.textContent?.trim()
       })`,
       returnByValue: true,
     });
@@ -522,14 +522,14 @@ try {
       failures.push(`${result.name}: intro did not dismiss after Enter`);
     }
   }
-  if (!results[0].carouselAfterNext?.scrollLeft || results[0].carouselAfterNext.counter !== "02 / 08") {
-    failures.push("desktop: next control did not advance the horizontal carousel");
+  if (results[0].carouselAfterNext?.counter !== "02 / 08") {
+    failures.push("desktop: next control did not advance the project carousel");
   }
   if (results[0].projectSlideWidth > 1100) {
     failures.push(`desktop: project slide is still oversized at ${results[0].projectSlideWidth}px`);
   }
-  if (results[0].carouselAfterSwipe?.scrollLeft <= results[0].carouselAfterNext?.scrollLeft) {
-    failures.push("desktop: pointer swipe did not advance the horizontal carousel");
+  if (results[0].carouselAfterSwipe?.counter !== "03 / 08") {
+    failures.push("desktop: pointer swipe did not advance the project carousel");
   }
   failures.push(...consoleProblems);
 

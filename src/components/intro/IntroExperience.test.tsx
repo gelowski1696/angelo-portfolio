@@ -1,5 +1,4 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { INTRO_SESSION_KEY, IntroExperience } from "./IntroExperience";
 
@@ -22,22 +21,27 @@ describe("IntroExperience", () => {
 
   afterEach(() => {
     cleanup();
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
-  it("shows on a first visit and remembers after entering", async () => {
-    const user = userEvent.setup();
+  it("shows on a first visit and remembers after entering", () => {
+    vi.useFakeTimers();
     render(<IntroExperience />);
 
-    const intro = await screen.findByRole("dialog", {
+    const intro = screen.getByRole("dialog", {
       name: /portfolio system introduction/i,
     });
     expect(intro).toBeInTheDocument();
     expect(intro.querySelector(".intro-pointer-glow")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /enter portfolio/i }));
+    act(() => vi.advanceTimersByTime(3000));
+    const enter = screen.getByRole("button", { name: /enter portfolio/i });
+    expect(enter).toBeEnabled();
+    fireEvent.click(enter);
+    act(() => vi.advanceTimersByTime(1900));
 
-    await waitFor(() => expect(intro).not.toBeInTheDocument());
+    expect(intro).not.toBeInTheDocument();
     expect(sessionStorage.getItem(INTRO_SESSION_KEY)).toBe("1");
   });
 
@@ -85,25 +89,22 @@ describe("IntroExperience", () => {
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new DOMException("Storage blocked", "SecurityError");
     });
-    const user = userEvent.setup();
-
     render(<IntroExperience />);
     const intro = await screen.findByRole("dialog", {
       name: /portfolio system introduction/i,
     });
-    await user.click(screen.getByRole("button", { name: /enter portfolio/i }));
+    fireEvent.click(screen.getByRole("button", { name: /skip intro/i }));
 
     await waitFor(() => expect(intro).not.toBeInTheDocument());
   });
 
   it("disables the enter control while entering the portfolio", async () => {
-    const user = userEvent.setup();
+    vi.useFakeTimers();
     render(<IntroExperience />);
 
-    const enter = await screen.findByRole("button", {
-      name: /enter portfolio/i,
-    });
-    await user.click(enter);
+    act(() => vi.advanceTimersByTime(3000));
+    const enter = screen.getByRole("button", { name: /enter portfolio/i });
+    fireEvent.click(enter);
 
     expect(enter).toBeDisabled();
   });

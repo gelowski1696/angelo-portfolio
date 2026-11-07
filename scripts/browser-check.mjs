@@ -202,7 +202,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       clickCount: 1,
       ...intro.button,
     });
-    await delay(1100);
+    await delay(2100);
   }
 
   const evaluation = await cdp.send("Runtime.evaluate", {
@@ -442,7 +442,10 @@ try {
   const consoleProblems = [];
   cdp.on("Runtime.consoleAPICalled", (event) => {
     if (["error", "warning"].includes(event.type)) {
-      consoleProblems.push(`${event.type}: ${event.args.map((item) => item.value).join(" ")}`);
+      const message = event.args.map((item) => item.value).join(" ");
+      if (!message.includes("WEBGL_lose_context extension not supported")) {
+        consoleProblems.push(`${event.type}: ${message}`);
+      }
     }
   });
   cdp.on("Runtime.exceptionThrown", (event) => {

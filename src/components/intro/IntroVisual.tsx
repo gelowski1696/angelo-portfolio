@@ -13,7 +13,13 @@ const subscribe = () => () => undefined;
 const getServerSnapshot = () => false;
 const getSnapshot = () => shouldRenderWebGL(readClientCapabilities());
 
-export function IntroVisual({ exiting }: { exiting: boolean }) {
+type IntroVisualProps = {
+  exiting: boolean;
+  pointer: { x: number; y: number };
+  progress: number;
+};
+
+export function IntroVisual({ exiting, pointer, progress }: IntroVisualProps) {
   const webglEnabled = useSyncExternalStore(
     subscribe,
     getSnapshot,
@@ -25,14 +31,23 @@ export function IntroVisual({ exiting }: { exiting: boolean }) {
     <div className="intro-visual" aria-hidden="true">
       <div className="intro-terminal">
         <div className="intro-terminal-screen">
-          <span>SYS / 01</span>
-          <strong>ONLINE</strong>
+          <span><b>SYS / 01</b><b>{progress >= 100 ? "READY" : "INIT"}</b></span>
+          <strong>{progress >= 100 ? "ONLINE" : `${String(progress).padStart(3, "0")}%`}</strong>
+          <i style={{ width: `${progress}%` }} />
         </div>
+        <div className="intro-terminal-leds" aria-hidden="true"><i /><i className={progress >= 55 ? "is-on" : undefined} /><i className={progress >= 100 ? "is-on" : undefined} /></div>
         <div className="intro-terminal-base" />
       </div>
       {webglEnabled && !failed ? (
-        <IntroScene exiting={exiting} onFailure={() => setFailed(true)} />
+        <IntroScene
+          exiting={exiting}
+          pointer={pointer}
+          progress={progress}
+          onFailure={() => setFailed(true)}
+        />
       ) : null}
+      <div className="intro-stage-chip intro-stage-chip-a" aria-hidden="true">LAYER 01 / INTERFACE</div>
+      <div className="intro-stage-chip intro-stage-chip-b" aria-hidden="true">PROJ_01 / ARCHIVE</div>
     </div>
   );
 }

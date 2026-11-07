@@ -117,6 +117,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
         if (!dialog) return null;
         return {
           hasCanvas: Boolean(dialog.querySelector('canvas')),
+          hasPointerGlow: Boolean(dialog.querySelector('.intro-pointer-glow')),
           animationNames: [
             '.intro-experience',
             '.intro-grid',
@@ -140,6 +141,27 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       path.join(outputDirectory, `${name}-intro-early.png`),
       Buffer.from(earlyIntroScreenshot.data, "base64"),
     );
+  }
+  let introPointerMoved = false;
+  if (earlyIntro) {
+    const beforePointerState = await cdp.send("Runtime.evaluate", {
+      expression: "document.querySelector('.intro-pointer-glow')?.getBoundingClientRect().left ?? null",
+      returnByValue: true,
+    });
+    await cdp.send("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      x: width * 0.82,
+      y: height * 0.22,
+    });
+    await delay(180);
+    const afterPointerState = await cdp.send("Runtime.evaluate", {
+      expression: "document.querySelector('.intro-pointer-glow')?.getBoundingClientRect().left ?? null",
+      returnByValue: true,
+    });
+    introPointerMoved =
+      beforePointerState.result.value !== null &&
+      afterPointerState.result.value !== null &&
+      Math.abs(afterPointerState.result.value - beforePointerState.result.value) > 1;
   }
   await delay(1800);
 
@@ -199,6 +221,8 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       projectImageCount: document.querySelectorAll('.project-art-image').length,
       motionBackgroundLayers: document.querySelectorAll('.project-motion-background > span').length,
       autoplayControlVisible: Boolean(document.querySelector('[aria-label="Pause project autoplay"]')),
+      introPointerGlow: ${Boolean(earlyIntro?.hasPointerGlow)},
+      introPointerMoved: ${introPointerMoved},
       introCssAnimationNames: ${JSON.stringify(earlyIntro?.animationNames ?? ["none", "none", "none", "none"])},
       containedProjectImages: [...document.querySelectorAll('.project-art-image')]
         .every((image) => getComputedStyle(image).objectFit === 'contain'),
@@ -469,6 +493,12 @@ try {
     }
     if (!result.autoplayControlVisible) {
       failures.push(`${result.name}: project autoplay is not enabled by default`);
+    }
+    if (result.introWasVisible && !result.introPointerGlow) {
+      failures.push(`${result.name}: intro pointer interaction is missing`);
+    }
+    if (result.introWasVisible && !result.reducedMotion && !result.introPointerMoved) {
+      failures.push(`${result.name}: intro pointer glow did not respond to movement`);
     }
     if (
       result.introWasVisible &&

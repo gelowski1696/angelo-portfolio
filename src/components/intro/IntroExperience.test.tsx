@@ -33,6 +33,7 @@ describe("IntroExperience", () => {
       name: /portfolio system introduction/i,
     });
     expect(intro).toBeInTheDocument();
+    expect(intro.querySelector(".intro-pointer-glow")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /enter portfolio/i }));
 

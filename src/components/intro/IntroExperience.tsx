@@ -1,7 +1,12 @@
 "use client";
 
 import { ArrowDownRight } from "lucide-react";
-import { motion } from "motion/react";
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+} from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { INTRO_REPLAY_EVENT } from "./intro-events";
 import { IntroVisual } from "./IntroVisual";
@@ -38,6 +43,12 @@ export function IntroExperience() {
   );
   const enterButton = useRef<HTMLButtonElement>(null);
   const exitTimer = useRef<number | null>(null);
+  const pointerX = useMotionValue(50);
+  const pointerY = useMotionValue(45);
+  const springX = useSpring(pointerX, { stiffness: 120, damping: 24, mass: 0.4 });
+  const springY = useSpring(pointerY, { stiffness: 120, damping: 24, mass: 0.4 });
+  const glowX = useMotionTemplate`${springX}%`;
+  const glowY = useMotionTemplate`${springY}%`;
 
   useEffect(
     () => () => {
@@ -105,6 +116,21 @@ export function IntroExperience() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [finish, visible]);
 
+  const handlePointerMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (event.pointerType === "touch") return;
+      const bounds = event.currentTarget.getBoundingClientRect();
+      pointerX.set(((event.clientX - bounds.left) / bounds.width) * 100);
+      pointerY.set(((event.clientY - bounds.top) / bounds.height) * 100);
+    },
+    [pointerX, pointerY],
+  );
+
+  const resetPointer = useCallback(() => {
+    pointerX.set(50);
+    pointerY.set(45);
+  }, [pointerX, pointerY]);
+
   if (!visible) return null;
 
   return (
@@ -113,11 +139,18 @@ export function IntroExperience() {
       role="dialog"
       aria-modal="true"
       aria-label="Portfolio system introduction"
+      onPointerMove={handlePointerMove}
+      onPointerLeave={resetPointer}
       initial={{ opacity: 0, scale: 1.015 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="intro-grid" aria-hidden="true" />
+      <motion.div
+        className="intro-pointer-glow"
+        aria-hidden="true"
+        style={{ left: glowX, top: glowY }}
+      />
       <IntroVisual exiting={phase === "exiting"} />
 
       <motion.div
@@ -136,14 +169,17 @@ export function IntroExperience() {
           ))}
         </div>
         <div className="intro-actions">
-          <button
+          <motion.button
             ref={enterButton}
             type="button"
             disabled={phase === "exiting"}
             onClick={() => finish(false)}
+            whileHover={{ x: 5, scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 360, damping: 24 }}
           >
             Enter portfolio <ArrowDownRight aria-hidden="true" size={18} />
-          </button>
+          </motion.button>
         </div>
       </motion.div>
     </motion.div>

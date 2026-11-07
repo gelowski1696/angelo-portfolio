@@ -29,6 +29,19 @@ html[data-intro="active"] {
   animation: intro-grid-drift 18s linear infinite;
 }
 
+.intro-pointer-glow {
+  position: absolute;
+  z-index: -1;
+  width: min(42vw, 38rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 140, 90, 0.16), rgba(95, 118, 152, 0.05) 35%, transparent 70%);
+  filter: blur(1.2rem);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  will-change: left, top;
+}
+
 .intro-visual {
   position: relative;
   justify-self: center;
@@ -157,6 +170,11 @@ html[data-intro="active"] {
   padding: 0 1.25rem;
   background: #f28c5a;
   color: #081426;
+}
+
+.intro-actions button:focus-visible {
+  outline: 2px solid #f4f1eb;
+  outline-offset: 0.35rem;
 }
 
 .intro-experience.is-exiting {

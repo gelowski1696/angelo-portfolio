@@ -26,23 +26,28 @@ export function IntroVisual({ exiting, pointer, progress }: IntroVisualProps) {
     getServerSnapshot,
   );
   const [failed, setFailed] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
+  const showFallback = !webglEnabled || failed || !sceneReady;
 
   return (
     <div className="intro-visual" aria-hidden="true">
-      <div className="intro-terminal">
-        <div className="intro-terminal-screen">
-          <span><b>SYS / 01</b><b>{progress >= 100 ? "READY" : "INIT"}</b></span>
-          <strong>{progress >= 100 ? "ONLINE" : `${String(progress).padStart(3, "0")}%`}</strong>
-          <i style={{ width: `${progress}%` }} />
+      {showFallback ? (
+        <div className="intro-terminal">
+          <div className="intro-terminal-screen">
+            <span><b>SYS / 01</b><b>{progress >= 100 ? "READY" : "INIT"}</b></span>
+            <strong>{progress >= 100 ? "ONLINE" : `${String(progress).padStart(3, "0")}%`}</strong>
+            <i style={{ width: `${progress}%` }} />
+          </div>
+          <div className="intro-terminal-leds" aria-hidden="true"><i /><i className={progress >= 55 ? "is-on" : undefined} /><i className={progress >= 100 ? "is-on" : undefined} /></div>
+          <div className="intro-terminal-base" />
         </div>
-        <div className="intro-terminal-leds" aria-hidden="true"><i /><i className={progress >= 55 ? "is-on" : undefined} /><i className={progress >= 100 ? "is-on" : undefined} /></div>
-        <div className="intro-terminal-base" />
-      </div>
+      ) : null}
       {webglEnabled && !failed ? (
         <IntroScene
           exiting={exiting}
           pointer={pointer}
           progress={progress}
+          onReady={() => setSceneReady(true)}
           onFailure={() => setFailed(true)}
         />
       ) : null}

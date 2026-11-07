@@ -198,6 +198,15 @@ export function IntroExperience() {
     [phase, ready],
   );
 
+  const replay = useCallback(() => {
+    if (exitTimer.current !== null) {
+      window.clearTimeout(exitTimer.current);
+      exitTimer.current = null;
+    }
+    setCycle((current) => current + 1);
+    setPhase("booting");
+  }, []);
+
   useEffect(() => {
     if (!visible) return;
     const onKeyDown = (event: KeyboardEvent) => {
@@ -243,6 +252,11 @@ export function IntroExperience() {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
+      <div className="intro-system-bar" aria-hidden="true">
+        <span><i /> PORTFOLIO SYS</span>
+        <span>{ready ? "SYSTEM READY" : "SYSTEM BOOT"}</span>
+      </div>
+      <p className="intro-scene-label" aria-hidden="true">SCENE / SYS 01</p>
       <div className="intro-grid" aria-hidden="true" />
       <motion.div
         className="intro-pointer-glow"
@@ -294,6 +308,10 @@ export function IntroExperience() {
       <p className="intro-stage-readout" aria-hidden="true">
         CAM {pointer.x >= 0 ? "+" : "−"}{Math.abs(pointer.x).toFixed(2)} / {pointer.y >= 0 ? "+" : "−"}{Math.abs(pointer.y).toFixed(2)} · MOVE TO ORBIT
       </p>
+      <button className="intro-replay" type="button" onClick={replay}>
+        ↻ Replay intro
+      </button>
+      <p className="intro-archive-index" aria-hidden="true">01 / 08 · ARCHIVE</p>
 
       {entering ? (
         <motion.div

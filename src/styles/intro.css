@@ -12,6 +12,45 @@ html[data-intro="active"] {
     #07122a;
 }
 
+.intro-system-bar {
+  display: flex;
+  position: absolute;
+  top: 1.25rem;
+  right: clamp(1.5rem, 4vw, 3.5rem);
+  left: clamp(1.5rem, 4vw, 3.5rem);
+  z-index: 6;
+  justify-content: space-between;
+  color: #f4f1ea;
+  font: 0.65rem/1 var(--font-mono), monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.intro-system-bar span:last-child {
+  color: #f28c5a;
+}
+
+.intro-system-bar i {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.55rem;
+  background: #f28c5a;
+  box-shadow: 0 0 0.8rem #f28c5a;
+}
+
+.intro-scene-label {
+  position: absolute;
+  top: 5.5rem;
+  left: clamp(1.5rem, 4vw, 3.5rem);
+  z-index: 6;
+  margin: 0;
+  color: #93a3bc;
+  font: 0.6rem/1 var(--font-mono), monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
 .intro-experience {
   position: fixed;
   inset: 0;
@@ -243,8 +282,10 @@ html[data-intro="active"] {
 
 .intro-headline-letter {
   display: inline-block;
+  color: #f4f1ea;
   transform-origin: 50% 100%;
   transform-style: preserve-3d;
+  -webkit-text-stroke: 0;
 }
 
 .intro-headline-letter.is-accent {
@@ -364,6 +405,37 @@ html[data-intro="active"] {
   margin: 0;
   color: #93a3bc;
   font-size: 0.62rem;
+}
+
+.intro-replay,
+.intro-archive-index {
+  position: absolute;
+  bottom: 1.25rem;
+  z-index: 6;
+  margin: 0;
+  color: #93a3bc;
+  font: 0.6rem/1 var(--font-mono), monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.intro-replay {
+  left: clamp(1.5rem, 4vw, 3.5rem);
+  bottom: 2.75rem;
+  padding: 0 0 0.3rem;
+  border: 0;
+  border-bottom: 1px solid rgba(147, 163, 188, 0.32);
+  background: transparent;
+  cursor: pointer;
+}
+
+.intro-replay:hover,
+.intro-replay:focus-visible {
+  color: #f4f1ea;
+}
+
+.intro-archive-index {
+  right: clamp(1.5rem, 4vw, 3.5rem);
 }
 
 .intro-hud {
@@ -514,5 +586,25 @@ html[data-intro="active"] {
     bottom: 1rem;
     left: 1.5rem;
     font-size: 0.55rem;
+  }
+
+  .intro-system-bar {
+    top: 1rem;
+    right: 1.5rem;
+    left: 1.5rem;
+  }
+
+  .intro-scene-label {
+    top: 4rem;
+    left: 1.5rem;
+  }
+
+  .intro-archive-index {
+    right: 1.5rem;
+    display: none;
+  }
+
+  .intro-stage-chip-b {
+    display: none;
   }
 }

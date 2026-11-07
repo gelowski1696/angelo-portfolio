@@ -223,11 +223,13 @@ function Particles() {
 export function IntroScene({
   exiting,
   onFailure,
+  onReady,
   pointer,
   progress,
 }: {
   exiting: boolean;
   onFailure: () => void;
+  onReady: () => void;
   pointer: PointerPosition;
   progress: number;
 }) {
@@ -239,6 +241,7 @@ export function IntroScene({
         camera={{ position: [0, 0.4, 15], fov: 25 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         shadows
+        onCreated={onReady}
       >
         <ambientLight intensity={0.25} color="#8fa7c7" />
         <directionalLight castShadow color="#e5ecf5" intensity={2.2} position={[3, 5, 4]} />

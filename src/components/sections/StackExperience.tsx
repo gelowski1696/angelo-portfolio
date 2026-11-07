@@ -16,17 +16,20 @@ export function StackExperience() {
             </p>
           </div>
         </div>
-        <div className="stack-grid">
+        <div className="capability-list">
           {Object.entries(portfolio.skills).map(([category, skills], index) => (
-            <div key={category} data-reveal>
-              <span>0{index + 1}</span>
-              <h3>{category}</h3>
+            <article key={category} data-reveal>
+              <span className="capability-index">0{index + 1}</span>
+              <div className="capability-copy">
+                <h3>{category}</h3>
+                <p>{portfolio.capabilityNotes[category]}</p>
+              </div>
               <ul>
                 {skills.map((skill) => (
                   <li key={skill}>{skill}</li>
                 ))}
               </ul>
-            </div>
+            </article>
           ))}
         </div>
       </section>
@@ -38,10 +41,30 @@ export function StackExperience() {
       >
         <div className="section-heading">
           <p className="section-index">04 / Experience</p>
-          <h2 id="experience-title" data-reveal>
-            Evidence over embellishment.
-          </h2>
+          <div>
+            <h2 id="experience-title" data-reveal>
+              Evidence over embellishment.
+            </h2>
+            <p className="section-intro" data-reveal>
+              A progression from frontline technical support to owning the systems,
+              interfaces, and production decisions behind business software.
+            </p>
+          </div>
         </div>
+        <dl className="experience-register" data-reveal>
+          <div>
+            <dt>Professional practice</dt>
+            <dd>5+ years</dd>
+          </div>
+          <div>
+            <dt>Current scope</dt>
+            <dd>ERP / POS + independent products</dd>
+          </div>
+          <div>
+            <dt>Operating mode</dt>
+            <dd>Build / ship / support</dd>
+          </div>
+        </dl>
         {portfolio.experience.length ? (
           <ol className="timeline">
             {portfolio.experience.map((item) => (
@@ -52,6 +75,11 @@ export function StackExperience() {
                   <h3>{item.role}</h3>
                   <p className="experience-summary">{item.summary}</p>
                 </div>
+                <ul className="experience-focus" aria-label={`${item.role} focus areas`}>
+                  {item.focus.map((focus) => (
+                    <li key={focus}>{focus}</li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ol>

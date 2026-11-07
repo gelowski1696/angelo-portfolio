@@ -69,7 +69,12 @@ describe("portfolio configuration", () => {
   it("includes configured contact and work history", () => {
     expect(portfolio.email).toBe("luzongangelo1996@gmail.com");
     expect(portfolio.resumeUrl).toMatch(/^https:\/\/docs\.google\.com\//);
+    expect(portfolio.profileFacts).toHaveLength(4);
+    expect(Object.keys(portfolio.capabilityNotes)).toEqual(
+      Object.keys(portfolio.skills),
+    );
     expect(portfolio.experience).toHaveLength(3);
     expect(portfolio.experience.every((item) => !item.isPlaceholder)).toBe(true);
+    expect(portfolio.experience.every((item) => item.focus.length > 0)).toBe(true);
   });
 });

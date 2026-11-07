@@ -20,6 +20,21 @@ export function Projects() {
         </div>
       </div>
 
+      <dl className="work-register" data-reveal>
+        <div>
+          <dt>Archive</dt>
+          <dd>{String(projects.length).padStart(2, "0")} selected builds</dd>
+        </div>
+        <div>
+          <dt>Focus</dt>
+          <dd>Operations / commerce / services</dd>
+        </div>
+        <div>
+          <dt>Delivery</dt>
+          <dd>Web / desktop / mobile</dd>
+        </div>
+      </dl>
+
       <ProjectCarousel projects={projects} />
     </section>
   );

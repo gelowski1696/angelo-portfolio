@@ -1,7 +1,7 @@
 .project-carousel {
   position: relative;
   isolation: isolate;
-  margin-top: clamp(3rem, 6vw, 6rem);
+  margin-top: clamp(2.25rem, 4vw, 3.5rem);
 }
 
 .project-motion-background {

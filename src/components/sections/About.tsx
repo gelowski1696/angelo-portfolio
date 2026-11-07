@@ -19,6 +19,14 @@ export function About() {
             <p key={paragraph}>{paragraph}</p>
           ))}
         </div>
+        <dl className="profile-facts" data-reveal>
+          {portfolio.profileFacts.map((fact) => (
+            <div key={fact.label}>
+              <dt>{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))}
+        </dl>
         <div className="strength-list">
           {portfolio.strengths.map((strength, index) => (
             <article key={strength.title} data-reveal>

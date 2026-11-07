@@ -29,7 +29,13 @@ export type Experience = {
   role: string;
   organization: string;
   summary: string;
+  focus: string[];
   isPlaceholder: boolean;
+};
+
+export type ProfileFact = {
+  label: string;
+  value: string;
 };
 
 export type Portfolio = {
@@ -44,8 +50,10 @@ export type Portfolio = {
   email: string;
   resumeUrl: string;
   social: Record<SocialKey, string>;
+  profileFacts: ProfileFact[];
   strengths: Array<{ title: string; description: string }>;
   skills: Record<string, string[]>;
+  capabilityNotes: Record<string, string>;
   projects: Project[];
   experience: Experience[];
 };

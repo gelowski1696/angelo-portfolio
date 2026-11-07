@@ -20,6 +20,12 @@ export const portfolio: Portfolio = {
     github: "https://github.com/gelowski1696",
     linkedin: "https://www.linkedin.com/in/angelo-luzong-9b1125274/",
   },
+  profileFacts: [
+    { label: "Practice", value: "Full-stack product delivery" },
+    { label: "Building since", value: "2021" },
+    { label: "Surfaces", value: "Web / desktop / mobile" },
+    { label: "Based in", value: "Philippines" },
+  ],
   strengths: [
     {
       title: "Business platforms",
@@ -47,6 +53,16 @@ export const portfolio: Portfolio = {
     Backend: ["Node.js", "REST APIs", "Prisma", "JWT / RBAC"],
     "Data & systems": ["SQL", "PostgreSQL", "SQLite", "Firebase"],
     Delivery: ["Git", "Docker", "Vercel", "Offline-first apps"],
+  },
+  capabilityNotes: {
+    Frontend:
+      "Responsive, accessible interfaces shaped around real tasks and clear decision paths.",
+    Backend:
+      "Secure application logic, integrations, and APIs that keep business rules dependable.",
+    "Data & systems":
+      "Practical schemas and operational flows for inventory, reporting, and traceable activity.",
+    Delivery:
+      "From source control to deployment, support, and iterative production fixes.",
   },
   projects: [
     {
@@ -202,6 +218,7 @@ export const portfolio: Portfolio = {
       organization: "ANSI Information Systems Inc.",
       summary:
         "Develop and maintain ERP and POS modules, resolve defects, improve performance, and support users with production issues.",
+      focus: ["ERP / POS", "Production support", "Performance"],
       isPlaceholder: false,
     },
     {
@@ -210,6 +227,7 @@ export const portfolio: Portfolio = {
       organization: "Independent / Freelance",
       summary:
         "Design and deliver custom web and mobile applications, covering interfaces, APIs, databases, deployment, and ongoing improvements.",
+      focus: ["Product delivery", "Web & mobile", "Client systems"],
       isPlaceholder: false,
     },
     {
@@ -218,6 +236,7 @@ export const portfolio: Portfolio = {
       organization: "Infocom Technologies, Inc.",
       summary:
         "Resolved software, hardware, and connectivity issues through remote troubleshooting, clear documentation, and customer support.",
+      focus: ["Troubleshooting", "Documentation", "Customer support"],
       isPlaceholder: false,
     },
   ],

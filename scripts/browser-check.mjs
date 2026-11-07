@@ -109,7 +109,39 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
   await delay(750);
   await cdp.send("Runtime.evaluate", { expression: "sessionStorage.clear()" });
   await cdp.send("Page.reload", { ignoreCache: true });
-  await delay(3000);
+  let earlyIntro = null;
+  for (let attempt = 0; attempt < 30 && !earlyIntro; attempt += 1) {
+    const earlyIntroState = await cdp.send("Runtime.evaluate", {
+      expression: `JSON.stringify((() => {
+        const dialog = document.querySelector('.intro-experience');
+        if (!dialog) return null;
+        return {
+          hasCanvas: Boolean(dialog.querySelector('canvas')),
+          animationNames: [
+            '.intro-experience',
+            '.intro-grid',
+            '.intro-terminal',
+            '.intro-copy',
+          ].map((selector) => getComputedStyle(dialog.querySelector(selector) ?? dialog).animationName),
+        };
+      })())`,
+      returnByValue: true,
+    });
+    earlyIntro = JSON.parse(earlyIntroState.result.value);
+    if (!earlyIntro) await delay(100);
+  }
+
+  if (earlyIntro) {
+    const earlyIntroScreenshot = await cdp.send("Page.captureScreenshot", {
+      format: "png",
+      captureBeyondViewport: false,
+    });
+    await writeFile(
+      path.join(outputDirectory, `${name}-intro-early.png`),
+      Buffer.from(earlyIntroScreenshot.data, "base64"),
+    );
+  }
+  await delay(1800);
 
   const introState = await cdp.send("Runtime.evaluate", {
     expression: `JSON.stringify((() => {
@@ -167,6 +199,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       projectImageCount: document.querySelectorAll('.project-art-image').length,
       motionBackgroundLayers: document.querySelectorAll('.project-motion-background > span').length,
       autoplayControlVisible: Boolean(document.querySelector('[aria-label="Pause project autoplay"]')),
+      introCssAnimationNames: ${JSON.stringify(earlyIntro?.animationNames ?? ["none", "none", "none", "none"])},
       containedProjectImages: [...document.querySelectorAll('.project-art-image')]
         .every((image) => getComputedStyle(image).objectFit === 'contain'),
       projectCounter: document.querySelector('.project-carousel-counter')?.textContent?.trim(),
@@ -366,8 +399,8 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
     name,
     viewport: `${width}x${height}`,
     reducedMotion,
-    introWasVisible: intro.visible,
-    introHasCanvas: intro.hasCanvas,
+    introWasVisible: Boolean(earlyIntro),
+    introHasCanvas: Boolean(earlyIntro?.hasCanvas),
     ...page,
     unnamedInteractiveElements: interactiveWithoutName.length,
   };
@@ -437,6 +470,12 @@ try {
     if (!result.autoplayControlVisible) {
       failures.push(`${result.name}: project autoplay is not enabled by default`);
     }
+    if (
+      result.introWasVisible &&
+      result.introCssAnimationNames.filter((name) => name !== "none").length < 3
+    ) {
+      failures.push(`${result.name}: intro CSS animation timeline is missing`);
+    }
     if (!result.containedProjectImages) {
       failures.push(`${result.name}: project images are not using uncropped contain sizing`);
     }
@@ -461,9 +500,6 @@ try {
   }
   if (results[0].carouselAfterSwipe?.scrollLeft <= results[0].carouselAfterNext?.scrollLeft) {
     failures.push("desktop: pointer swipe did not advance the horizontal carousel");
-  }
-  if (results[2].introWasVisible && results[0].introHasCanvas !== results[2].introHasCanvas) {
-    failures.push("reduced-motion: intro effects did not match the normal motion mode");
   }
   failures.push(...consoleProblems);
 

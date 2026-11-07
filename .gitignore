@@ -13,3 +13,7 @@ dist/
 .DS_Store
 Thumbs.db
 .vercel/
+
+# Local planning documents
+CODEX_PORTFOLIO_PLAN.md
+portfolio-codex-plan.md

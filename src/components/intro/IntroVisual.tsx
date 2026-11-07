@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { readClientCapabilities, shouldRenderWebGL } from "@/lib/capabilities";
 
 const IntroScene = dynamic(
@@ -27,12 +27,38 @@ export function IntroVisual({ exiting, pointer, progress }: IntroVisualProps) {
   );
   const [failed, setFailed] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
+  const [hasRenderedScene, setHasRenderedScene] = useState(false);
+  const healthTimer = useRef<number | null>(null);
   const showFallback = !webglEnabled || failed || !sceneReady;
+
+  const clearHealthTimer = useCallback(() => {
+    if (healthTimer.current === null) return;
+    window.clearTimeout(healthTimer.current);
+    healthTimer.current = null;
+  }, []);
+
+  const handleSceneFrame = useCallback(() => {
+    setHasRenderedScene(true);
+    setSceneReady(true);
+    clearHealthTimer();
+    healthTimer.current = window.setTimeout(() => {
+      setSceneReady(false);
+      healthTimer.current = null;
+    }, 900);
+  }, [clearHealthTimer]);
+
+  const handleSceneFailure = useCallback(() => {
+    clearHealthTimer();
+    setSceneReady(false);
+    setFailed(true);
+  }, [clearHealthTimer]);
+
+  useEffect(() => clearHealthTimer, [clearHealthTimer]);
 
   return (
     <div className="intro-visual" aria-hidden="true">
       {showFallback ? (
-        <div className="intro-terminal">
+        <div className={`intro-terminal${hasRenderedScene ? " is-recovery" : ""}`}>
           <div className="intro-terminal-screen">
             <span><b>SYS / 01</b><b>{progress >= 100 ? "READY" : "INIT"}</b></span>
             <strong>{progress >= 100 ? "ONLINE" : `${String(progress).padStart(3, "0")}%`}</strong>
@@ -47,8 +73,8 @@ export function IntroVisual({ exiting, pointer, progress }: IntroVisualProps) {
           exiting={exiting}
           pointer={pointer}
           progress={progress}
-          onReady={() => setSceneReady(true)}
-          onFailure={() => setFailed(true)}
+          onFrame={handleSceneFrame}
+          onFailure={handleSceneFailure}
         />
       ) : null}
       <div className="intro-stage-chip intro-stage-chip-a" aria-hidden="true">LAYER 01 / INTERFACE</div>

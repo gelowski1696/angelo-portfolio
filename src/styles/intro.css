@@ -119,6 +119,10 @@ html[data-intro="active"] {
   transition: opacity 0.5s ease;
 }
 
+.intro-terminal.is-recovery {
+  animation: none;
+}
+
 .intro-terminal-screen {
   display: flex;
   position: relative;

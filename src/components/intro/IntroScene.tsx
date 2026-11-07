@@ -1,6 +1,6 @@
 "use client";
 
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Edges, RoundedBox } from "@react-three/drei";
 import { Component, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
@@ -118,13 +118,29 @@ function updateTerminalTexture(texture: THREE.CanvasTexture, progress: number) {
   texture.needsUpdate = true;
 }
 
-function SceneReady({ onReady }: { onReady: () => void }) {
-  const reported = useRef(false);
+function SceneHealth({
+  onFailure,
+  onFrame,
+}: {
+  onFailure: () => void;
+  onFrame: () => void;
+}) {
+  const renderer = useThree((state) => state.gl);
+  const lastReportedAt = useRef(Number.NEGATIVE_INFINITY);
 
-  useFrame(() => {
-    if (reported.current) return;
-    reported.current = true;
-    onReady();
+  useEffect(() => {
+    const canvas = renderer.domElement;
+    const handleContextLost = () => onFailure();
+
+    canvas.addEventListener("webglcontextlost", handleContextLost);
+    return () => canvas.removeEventListener("webglcontextlost", handleContextLost);
+  }, [onFailure, renderer]);
+
+  useFrame((state) => {
+    const elapsed = state.clock.elapsedTime;
+    if (elapsed - lastReportedAt.current < 0.25) return;
+    lastReportedAt.current = elapsed;
+    onFrame();
   });
 
   return null;
@@ -326,13 +342,13 @@ function Particles() {
 export function IntroScene({
   exiting,
   onFailure,
-  onReady,
+  onFrame,
   pointer,
   progress,
 }: {
   exiting: boolean;
   onFailure: () => void;
-  onReady: () => void;
+  onFrame: () => void;
   pointer: PointerPosition;
   progress: number;
 }) {
@@ -345,7 +361,7 @@ export function IntroScene({
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         shadows
       >
-        <SceneReady onReady={onReady} />
+        <SceneHealth onFailure={onFailure} onFrame={onFrame} />
         <ambientLight intensity={0.58} color="#9db4d2" />
         <directionalLight castShadow color="#f4f1ea" intensity={1.8} position={[4, 6, 5]} />
         <pointLight color="#f28c5a" intensity={3.4} distance={7} position={[0, 1, 3]} />

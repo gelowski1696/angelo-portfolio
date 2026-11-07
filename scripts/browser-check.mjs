@@ -179,6 +179,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
     returnByValue: true,
   });
   const intro = JSON.parse(introState.result.value);
+  let contextLossFallbackVisible = null;
 
   if (intro.visible) {
     const introScreenshot = await cdp.send("Page.captureScreenshot", {
@@ -189,6 +190,35 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
       path.join(outputDirectory, `${name}-intro.png`),
       Buffer.from(introScreenshot.data, "base64"),
     );
+
+    if (name === "desktop" && intro.hasCanvas) {
+      await cdp.send("Runtime.evaluate", {
+        expression: `(() => {
+          const canvas = document.querySelector('.intro-experience canvas');
+          if (!canvas) return false;
+          canvas.dispatchEvent(new Event('webglcontextlost', { cancelable: true }));
+          return true;
+        })()`,
+        returnByValue: true,
+      });
+      await delay(400);
+      const fallbackState = await cdp.send("Runtime.evaluate", {
+        expression: `(() => {
+          const fallback = document.querySelector('.intro-experience .intro-terminal');
+          return Boolean(fallback && Number.parseFloat(getComputedStyle(fallback).opacity) > 0.95);
+        })()`,
+        returnByValue: true,
+      });
+      contextLossFallbackVisible = fallbackState.result.value;
+      const contextLossScreenshot = await cdp.send("Page.captureScreenshot", {
+        format: "png",
+        captureBeyondViewport: false,
+      });
+      await writeFile(
+        path.join(outputDirectory, "desktop-intro-context-loss.png"),
+        Buffer.from(contextLossScreenshot.data, "base64"),
+      );
+    }
 
     await cdp.send("Input.dispatchMouseEvent", {
       type: "mousePressed",
@@ -425,6 +455,7 @@ async function inspectViewport(cdp, name, width, height, reducedMotion = false) 
     reducedMotion,
     introWasVisible: Boolean(earlyIntro),
     introHasCanvas: Boolean(earlyIntro?.hasCanvas),
+    contextLossFallbackVisible,
     ...page,
     unnamedInteractiveElements: interactiveWithoutName.length,
   };
@@ -527,6 +558,9 @@ try {
   }
   if (results[0].carouselAfterNext?.counter !== "02 / 08") {
     failures.push("desktop: next control did not advance the project carousel");
+  }
+  if (!results[0].contextLossFallbackVisible) {
+    failures.push("desktop: intro fallback did not recover after WebGL context loss");
   }
   if (results[0].projectSlideWidth > 1100) {
     failures.push(`desktop: project slide is still oversized at ${results[0].projectSlideWidth}px`);

@@ -27,6 +27,18 @@ class IntroSceneBoundary extends Component<
 
 type PointerPosition = { x: number; y: number };
 
+function SceneReady({ onReady }: { onReady: () => void }) {
+  const reported = useRef(false);
+
+  useFrame(() => {
+    if (reported.current) return;
+    reported.current = true;
+    onReady();
+  });
+
+  return null;
+}
+
 function Terminal({ exiting, pointer, progress }: { exiting: boolean; pointer: PointerPosition; progress: number }) {
   const scene = useRef<THREE.Group>(null);
   const screen = useRef<THREE.MeshStandardMaterial>(null);
@@ -241,8 +253,8 @@ export function IntroScene({
         camera={{ position: [0, 0.4, 15], fov: 25 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         shadows
-        onCreated={onReady}
       >
+        <SceneReady onReady={onReady} />
         <ambientLight intensity={0.25} color="#8fa7c7" />
         <directionalLight castShadow color="#e5ecf5" intensity={2.2} position={[3, 5, 4]} />
         <pointLight color="#f28c5a" intensity={6} distance={8} position={[0, 1, 2]} />

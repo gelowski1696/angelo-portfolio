@@ -119,10 +119,6 @@ html[data-intro="active"] {
   transition: opacity 0.5s ease;
 }
 
-.intro-visual:has(.intro-canvas) .intro-terminal {
-  opacity: 0;
-}
-
 .intro-terminal-screen {
   display: flex;
   position: relative;

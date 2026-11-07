@@ -14,6 +14,7 @@ dist/
 Thumbs.db
 .vercel/
 
-# Local planning documents
+# Local agent and planning documents
+AGENTS.md
 CODEX_PORTFOLIO_PLAN.md
 portfolio-codex-plan.md

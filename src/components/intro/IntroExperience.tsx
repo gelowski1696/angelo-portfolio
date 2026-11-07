@@ -193,7 +193,7 @@ export function IntroExperience() {
       }
 
       setPhase("entering");
-      exitTimer.current = window.setTimeout(() => setVisible(false), 1900);
+      exitTimer.current = window.setTimeout(() => setVisible(false), 700);
     },
     [phase, ready],
   );
@@ -312,18 +312,6 @@ export function IntroExperience() {
         ↻ Replay intro
       </button>
       <p className="intro-archive-index" aria-hidden="true">01 / 08 · ARCHIVE</p>
-
-      {entering ? (
-        <motion.div
-          className="intro-flash"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 0, 1] }}
-          transition={{ duration: 1.9, times: [0, 0.38, 1], ease: "easeInOut" }}
-          aria-hidden="true"
-        >
-          OPENING ARCHIVE…
-        </motion.div>
-      ) : null}
     </motion.div>
   );
 }

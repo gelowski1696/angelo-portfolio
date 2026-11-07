@@ -460,19 +460,6 @@ html[data-intro="active"] {
   border-width: 0 1px 1px 0;
 }
 
-.intro-flash {
-  position: absolute;
-  inset: 0;
-  z-index: 20;
-  display: grid;
-  place-items: center;
-  background: #f4a877;
-  color: #0c1a36;
-  font: 700 0.8rem/1 var(--font-mono), monospace;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
 .intro-experience.is-entering .intro-visual,
 .intro-experience.is-entering .intro-stage-chip,
 .intro-experience.is-entering .intro-hud {

@@ -39,7 +39,7 @@ describe("IntroExperience", () => {
     const enter = screen.getByRole("button", { name: /enter portfolio/i });
     expect(enter).toBeEnabled();
     fireEvent.click(enter);
-    act(() => vi.advanceTimersByTime(1900));
+    act(() => vi.advanceTimersByTime(700));
 
     expect(intro).not.toBeInTheDocument();
     expect(sessionStorage.getItem(INTRO_SESSION_KEY)).toBe("1");
